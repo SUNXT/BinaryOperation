@@ -10,7 +10,6 @@ public class BinaryNum {
 
     private String text;//字符串的表示形式
     private int[] values;//存储每个字节的值 每个字节的值为0或1,第一位为符号位 0表示+ 1表示-
-    private boolean isComplementNum = false;//标识是不是补码，如果已经转过一次则不能再转换
 
     /**
      * 十进制数
@@ -89,11 +88,6 @@ public class BinaryNum {
             return;
         }
 
-        if (isComplementNum){
-            return;
-        }
-
-        isComplementNum = true;
         //为负数，需要转换，从右往左扫描，遇到第一位1后的字节，进行反码处理
         int rightOneIndex = text.lastIndexOf("1");//找从右边数过来第一个1 的位置
         Log.d("the right one index is " + rightOneIndex);

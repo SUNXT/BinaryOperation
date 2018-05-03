@@ -5,8 +5,8 @@ import utils.Log;
 public class BinaryNumOperation {
 
     public static void main(String[] args){
-        BinaryNum num = new BinaryNum("10110111");
-        BinaryNum num1 = new BinaryNum("10101011");
+        BinaryNum num = new BinaryNum("011111111");
+        BinaryNum num1 = new BinaryNum("011111111");
         num.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
         num1.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
         add(num, num1);
@@ -57,8 +57,10 @@ public class BinaryNumOperation {
             result = new BinaryNum(sum);
         }
 
-
-        Log.d("sum: ", result.getValues());
+        Log.d("计算结果：sum：", result.getValues());
+        //因为是补码计算，计算结果需要再取补码
+        result.transComplementNum();
+        Log.d("取其补码：sum：", result.getValues());
         Log.d("sum: " + result.getDecimalValue());
         return result;
     }
