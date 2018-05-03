@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.controller.MainViewController">
    <children>
-      <Button id="mButton" layoutX="273.0" layoutY="213.0" mnemonicParsing="false" text="Button" onAction="#buttonAction" />
-      <Label layoutX="14.0" layoutY="14.0" text="请选择位数" />
-      <ComboBox layoutX="14.0" layoutY="45.0" prefWidth="150.0" />
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="50.0" text="请选择" />
+      <ComboBox fx:id="mComboBoxBit" layoutX="14.0" layoutY="45.0" prefHeight="27.0" prefWidth="142.0" />
+      <ComboBox fx:id="mComboBoxType" layoutX="184.0" layoutY="45.0" prefHeight="27.0" prefWidth="114.0" />
+      <TextField fx:id="mEditNum1" layoutX="14.0" layoutY="118.0" prefHeight="27.0" prefWidth="105.0" />
+      <TextField fx:id="mEditNum2" layoutX="14.0" layoutY="193.0" prefHeight="27.0" prefWidth="105.0" />
+      <Label layoutX="14.0" layoutY="87.0" text="Num 1: " />
+      <ComboBox fx:id="mCBoxCalculateNumType" layoutX="319.0" layoutY="45.0" prefHeight="27.0" prefWidth="105.0" />
+      <ComboBox fx:id="mCBoxCalculateType" layoutX="447.0" layoutY="45.0" prefHeight="27.0" prefWidth="105.0" />
+      <Label layoutX="14.0" layoutY="162.0" text="Num 2:" />
+      <Label layoutX="133.0" layoutY="123.0" text="原码：" />
+      <Label layoutX="133.0" layoutY="198.0" text="原码：" />
+      <Label fx:id="mLabelONum1" layoutX="184.0" layoutY="123.0" prefHeight="17.0" prefWidth="163.0" text="0" />
+      <Label fx:id="mLabelONum2" layoutX="184.0" layoutY="198.0" prefHeight="17.0" prefWidth="163.0" text="0" />
+      <Label layoutX="361.0" layoutY="123.0" text="补码：" />
+      <Label layoutX="361.0" layoutY="198.0" text="补码：" />
+      <Label fx:id="mLabelCNum1" layoutX="417.0" layoutY="123.0" prefHeight="17.0" prefWidth="163.0" text="0" />
+      <Label fx:id="mLabelCNum2" layoutX="413.0" layoutY="198.0" prefHeight="17.0" prefWidth="163.0" text="0" />
    </children>
 </AnchorPane>
