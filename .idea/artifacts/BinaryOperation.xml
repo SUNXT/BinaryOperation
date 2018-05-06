@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="BinaryOperation">
+    <output-path>$PROJECT_DIR$/out/artifacts/BinaryOperation</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="view.MainView" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="exe" />
+        <option name="title" value="二进制计算器" />
+        <option name="vendor" value="SUN" />
+        <option name="version" value="" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="BinaryOperation.jar">
+        <element id="module-output" name="BinaryOperation" />
+      </element>
+    </root>
+  </artifact>
+</component>

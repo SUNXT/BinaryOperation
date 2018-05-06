@@ -34,7 +34,7 @@ public class NumberUtils {
             zeroStr += "0";
         }
 
-        if (num > 0 ){
+        if (num >= 0 ){
             return "0" + zeroStr + binNum;
         }
         return "1" + zeroStr + binNum;
@@ -76,6 +76,31 @@ public class NumberUtils {
             newText.append(v);
         }
         return newText.toString();
+    }
+
+    public static String transString(int[] values){
+        StringBuilder newText = new StringBuilder();
+        for (int i : values){
+            newText.append(i);
+        }
+        return newText.toString();
+    }
+
+    /**
+     * 创造一个长度为length的0字符串
+     * @param length
+     * @return
+     */
+    public static String createZero(int length){
+        if (length < 1){
+            return "";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < length; ++ i){
+            builder.append(0);
+        }
+        return builder.toString();
     }
 
 }

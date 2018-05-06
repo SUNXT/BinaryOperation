@@ -1,6 +1,8 @@
 package view.controller;
 
 import binary.BinaryNum;
+import binary.BinaryNumOperation;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -14,8 +16,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.InputMethodEvent;
+import javafx.stage.Stage;
+import utils.AppDataUtils;
 import utils.Log;
 import utils.NumberUtils;
+import view.CalculateView;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -45,6 +50,9 @@ public class MainViewController implements Initializable {
 
     private int[] mBitLengthArys = {BinaryNum.TYPE_8_BIT, BinaryNum.TYPE_16_BIT};
 
+    private String mNum1 = "00";
+    private String mNum2 = "00";
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initComboBox();
@@ -58,6 +66,7 @@ public class MainViewController implements Initializable {
         mComboBoxBitData = FXCollections.observableArrayList("八位/8 bit", "十六位/16 bit");
         mComboBoxBit.setItems(mComboBoxBitData);
         mComboBoxBit.setValue(mComboBoxBitData.get(0));
+        mComboBoxBit.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateView());
 
         mComboBoxTypeData = FXCollections.observableArrayList("整数", "纯小数");
         mComboBoxType.setItems(mComboBoxTypeData);
@@ -80,10 +89,12 @@ public class MainViewController implements Initializable {
                 int bitLength = mBitLengthArys[mComboBoxBitData.indexOf(mComboBoxBit.getValue())];
                 int num = Integer.parseInt(newValue);
                 mEditNum1.setText("" + num);
-                mLabelCNum1.setText(NumberUtils.transBinNum(bitLength, newValue));
+                mNum1 = NumberUtils.transBinNum(bitLength, newValue);
+                mLabelCNum1.setText(mNum1);
                 mLabelONum1.setText(NumberUtils.transComplementNum(bitLength, newValue));
             }else {
-                mEditNum1.setText(oldValue);
+                mNum1 = "00";
+                mEditNum1.setText("0");
             }
 
         });
@@ -93,18 +104,35 @@ public class MainViewController implements Initializable {
             if (NumberUtils.isInteger(newValue)){
                 int bitLength = mBitLengthArys[mComboBoxBitData.indexOf(mComboBoxBit.getValue())];
                 mEditNum2.setText("" + Integer.parseInt(newValue));
-                mLabelCNum2.setText(NumberUtils.transBinNum(bitLength, newValue));
+                mNum2 = NumberUtils.transBinNum(bitLength, newValue);
+                mLabelCNum2.setText(mNum2);
                 mLabelONum2.setText(NumberUtils.transComplementNum(bitLength, newValue));
             }else {
-                mEditNum2.setText(oldValue);
+                mNum2 = "00";
+                mEditNum2.setText("0");
             }
 
         });
     }
 
     public void buttonAction(ActionEvent event){
-
-        Log.d("" + mComboBoxBitData.indexOf(mComboBoxBit.getValue()));
+        try {
+            AppDataUtils.put("num1", mNum1);
+            AppDataUtils.put("num2", mNum2);
+            AppDataUtils.put(BinaryNumOperation.Operation.TAG, BinaryNumOperation.Operation.OP_ADD);
+            new CalculateView().start(new Stage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    private void updateView(){
+        int bitLength = mBitLengthArys[mComboBoxBitData.indexOf(mComboBoxBit.getValue())];
+        mNum1 = NumberUtils.transBinNum(bitLength, mEditNum1.getText());
+        mLabelCNum1.setText(mNum1);
+        mLabelONum1.setText(NumberUtils.transComplementNum(bitLength, mEditNum1.getText()));
+        mNum2 = NumberUtils.transBinNum(bitLength, mEditNum2.getText());
+        mLabelCNum2.setText(mNum2);
+        mLabelONum2.setText(NumberUtils.transComplementNum(bitLength, mEditNum2.getText()));
+    }
 }

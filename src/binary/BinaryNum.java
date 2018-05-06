@@ -16,7 +16,7 @@ public class BinaryNum {
      * @param decimalNum
      */
     public BinaryNum(int decimalNum){
-        if (decimalNum > 0){
+        if (decimalNum >= 0){
             text = "0" + Integer.toBinaryString(decimalNum);
         }else {
             text = "1" + Integer.toBinaryString(-decimalNum);
