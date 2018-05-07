@@ -3,6 +3,8 @@ package binary;
 
 import utils.Log;
 
+import java.awt.*;
+
 public class BinaryNum {
 
     public static final int TYPE_8_BIT = 8;//8字节
@@ -10,6 +12,7 @@ public class BinaryNum {
 
     private String text;//字符串的表示形式
     private int[] values;//存储每个字节的值 每个字节的值为0或1,第一位为符号位 0表示+ 1表示-
+    private int bitType;//字节数
 
     /**
      * 十进制数
@@ -55,6 +58,9 @@ public class BinaryNum {
      * @param bitLength
      */
     public void transBinaryNumBitLength(int bitLength){
+
+        bitType = bitLength;
+
         if (bitLength < values.length - 1){
             Log.d("转换的字节长度小于原本的字节长度！");
             return;
@@ -125,6 +131,12 @@ public class BinaryNum {
     public int getLength(){
         return values.length;
     }
+
+    /**
+     * 获取字节类型
+     * @return
+     */
+    public int getBitType(){return bitType;}
 
     /**
      * 获取十进制的值

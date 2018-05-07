@@ -6,7 +6,7 @@
         <option name="appClass" value="view.MainView" />
         <option name="description" value="" />
         <option name="htmlPlaceholderId" value="" />
-        <option name="nativeBundle" value="exe" />
+        <option name="nativeBundle" value="msi" />
         <option name="title" value="二进制计算器" />
         <option name="vendor" value="SUN" />
         <option name="version" value="" />
