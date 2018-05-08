@@ -10,81 +10,13 @@ import java.util.LinkedList;
 public class BinaryNumOperation {
 
     public static void main(String[] args){
-        BinaryNum num = new BinaryNum(0);
-        BinaryNum num1 = new BinaryNum(-10);
+        BinaryNum num = new BinaryNum(55);
+        BinaryNum num1 = new BinaryNum(10);
         num.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
         num1.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
-        cut(num, num1, true);
+        cut(num, num1, false);
     }
 
-    /**
-     * 操作类
-     */
-    public static class Operation{
-
-        public static final String TAG = "Operation";
-
-        public static final int OP_ADD = 0;//加法
-        public static final int OP_CUT = 1;//减法
-        public static final int OP_MUTIL = 2;//乘法
-        public static final int OP_DIVISION = 3;//除法
-
-        private BinaryNum num1;
-        private BinaryNum num2;
-        private BinaryNum result;
-        private String calculateExplanation;//计算说明
-        private int operationWay;//计算方式
-        private LinkedList<String> calculateProcess;//计算过程
-
-        public BinaryNum getNum1() {
-            return num1;
-        }
-
-        public void setNum1(BinaryNum num1) {
-            this.num1 = num1;
-        }
-
-        public BinaryNum getNum2() {
-            return num2;
-        }
-
-        public void setNum2(BinaryNum num2) {
-            this.num2 = num2;
-        }
-
-        public BinaryNum getResult() {
-            return result;
-        }
-
-        public void setResult(BinaryNum result) {
-            this.result = result;
-        }
-
-        public int getOperationWay() {
-            return operationWay;
-        }
-
-        public void setOperationWay(int operationWay) {
-            this.operationWay = operationWay;
-        }
-
-        public String getCalculateExplanation() {
-            return calculateExplanation;
-        }
-
-        public void setCalculateExplanation(String calculateExplanation) {
-            this.calculateExplanation = calculateExplanation;
-        }
-
-        public LinkedList<String> getCalculateProcess() {
-            return calculateProcess;
-        }
-
-        public void setCalculateProcess(LinkedList<String> calculateProcess) {
-            this.calculateProcess = calculateProcess;
-        }
-
-    }
 
     /**
      * 整数
@@ -263,6 +195,8 @@ public class BinaryNumOperation {
         Operation operation = new Operation();
         operation.setNum1(new BinaryNum(num1.getValues()));
         operation.setNum2(new BinaryNum(num2.getValues()));
+        LinkedList<String> calculateProcess = new LinkedList<>();
+        int count = 1;
 
         num1.transComplementNum();
         Log.d("num1 转为补码：" + num1.toString());
@@ -276,6 +210,73 @@ public class BinaryNumOperation {
         Log.d("num2: " + num2.toString());
         num2.transComplementNum();//转为补码
         Log.d("求[-num2](补) = " + num2.toString());
+
+        //处理符号位变成双符号位
+        int[] sum = new int[num1.getLength() + 1];//声明多1位，sum为部分和
+        //第一步，将num1的值赋给部分和sum
+        System.arraycopy(num1.getValues(), 0, sum, 1, sum.length - 1);
+        sum[0] = num1.getValues()[0];//双符号位
+        Log.d("sum", sum);
+
+        int[] num2Values = new int[num2.getLength() + 1];
+        System.arraycopy(num2.getValues(), 0, num2Values, 1, num2.getLength());
+        num2Values[0] = num2.getValues()[0];//双符号位
+        Log.d("num2", num2Values);
+
+        //分为二位和一位计算
+        String p4 = "";
+        if (isTwoBit){
+            //二位计算
+            for (int i = num2Values.length - 1; i >= 0; i-=2){
+                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
+                if (num2Values[i] == 0 && num2Values[i-1] == 0){
+                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
+                }else {
+                    sum = add(sum, num2Values[i], i);
+                    sum = add(sum, num2Values[i-1], i - 1);
+                    p4 += num2Values[i-1] + "" +  num2Values[i] + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
+                }
+                calculateProcess.add(p4);
+            }
+        }else {
+            //一位计算
+            //符号位也要加
+            for (int i = num2Values.length - 1; i >= 0; i --){
+                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
+                if (num2Values[i] != 0){
+                    sum = add(sum, num2Values[i], i);
+                    p4 += "1" + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
+                }else {
+                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
+                }
+                calculateProcess.add(p4);
+            }
+        }
+
+        //进行符号位处理
+        //判断符号位有没有有溢出 将最高位和次高位的数进行异或，如果结果为 0，则表示 溢出，如果符号位为11，表示负溢出，不处理；
+        //如果符号位为00，表示正溢出，去掉最高为的符号位，从次高位开始作为符号位。
+        //如果符号位异或的结果为 1，表示不溢出，直接取次高位的数最为符号位
+        BinaryNum result;
+        if ((sum[0]^sum[1]) == 0){
+            //如果是负溢出 11
+            if (sum[0] == 1){
+                result = new BinaryNum(sum);//不处理
+            }else {
+                //正溢出 00
+                int[] newSum = new int[sum.length - 1];
+                System.arraycopy(sum, 1, newSum, 0, newSum.length);
+                result = new BinaryNum(newSum);
+            }
+        }else {
+            result = new BinaryNum(sum);
+        }
+
+        //将结果进行转为原码
+        result.transComplementNum();
+        operation.setResult(result);
+
+        Log.d("结果：" + result.getDecimalValue());
         return operation;
     }
 

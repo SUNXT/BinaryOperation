@@ -2,6 +2,7 @@ package view.controller;
 
 import binary.BinaryNum;
 import binary.BinaryNumOperation;
+import binary.Operation;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,7 +30,7 @@ public class CalculateViewController implements Initializable {
     private BinaryNum mNum2;
     private int operationWay;
     private boolean isTwoBit;//是不是二位计算
-    private BinaryNumOperation.Operation mOperation;
+    private Operation mOperation;
     private LinkedList<String> mCalculateProcess;
 
     @Override
@@ -37,7 +38,7 @@ public class CalculateViewController implements Initializable {
         initButton();
         mNum1 = new BinaryNum((String) AppDataUtils.get("num1"));
         mNum2 = new BinaryNum((String) AppDataUtils.get("num2"));
-        operationWay = (int) AppDataUtils.get(BinaryNumOperation.Operation.TAG);
+        operationWay = (int) AppDataUtils.get(Operation.TAG);
         isTwoBit = (boolean) AppDataUtils.get("isTwoBit");
         calculate();//计算
     }
@@ -60,7 +61,7 @@ public class CalculateViewController implements Initializable {
 
     private void calculate(){
         switch (operationWay){
-            case BinaryNumOperation.Operation.OP_ADD:
+            case Operation.OP_ADD:
                 mOperation = BinaryNumOperation.add(mNum1, mNum2, isTwoBit);
                 break;
             default:
