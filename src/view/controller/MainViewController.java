@@ -2,6 +2,7 @@ package view.controller;
 
 import binary.BinaryNum;
 import binary.BinaryNumOperation;
+import binary.Operation;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -119,7 +120,8 @@ public class MainViewController implements Initializable {
         try {
             AppDataUtils.put("num1", mNum1);
             AppDataUtils.put("num2", mNum2);
-            AppDataUtils.put(BinaryNumOperation.Operation.TAG, BinaryNumOperation.Operation.OP_ADD);
+            AppDataUtils.put(Operation.TAG, Operation.OP_ADD);
+            AppDataUtils.put("isTwoBit", "二位计算".equals(mCBoxCalculateType.getValue()));
             new CalculateView().start(new Stage());
         } catch (Exception e) {
             e.printStackTrace();

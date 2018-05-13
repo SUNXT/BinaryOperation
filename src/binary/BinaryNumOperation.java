@@ -10,10 +10,10 @@ import java.util.LinkedList;
 public class BinaryNumOperation {
 
     public static void main(String[] args){
-        BinaryNum num = new BinaryNum(55);
-        BinaryNum num1 = new BinaryNum(10);
-        num.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
-        num1.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
+        BinaryNum num = new BinaryNum(-55);
+        BinaryNum num1 = new BinaryNum(-9);
+        num.transBinaryNumBitLength(BinaryNum.TYPE_16_BIT);
+        num1.transBinaryNumBitLength(BinaryNum.TYPE_16_BIT);
         cut(num, num1, false);
     }
 
@@ -275,7 +275,7 @@ public class BinaryNumOperation {
         //将结果进行转为原码
         result.transComplementNum();
         operation.setResult(result);
-
+        operation.setCalculateProcess(calculateProcess);
         Log.d("结果：" + result.getDecimalValue());
         return operation;
     }
