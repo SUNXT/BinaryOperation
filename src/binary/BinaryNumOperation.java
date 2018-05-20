@@ -10,8 +10,8 @@ import java.util.LinkedList;
 public class BinaryNumOperation {
 
     public static void main(String[] args){
-        BinaryNum num = new BinaryNum(-55);
-        BinaryNum num1 = new BinaryNum(-9);
+        BinaryNum num = new BinaryNum(32);
+        BinaryNum num1 = new BinaryNum(1);
         num.transBinaryNumBitLength(BinaryNum.TYPE_16_BIT);
         num1.transBinaryNumBitLength(BinaryNum.TYPE_16_BIT);
         cut(num, num1, false);
@@ -73,37 +73,49 @@ public class BinaryNumOperation {
         System.arraycopy(num2.getValues(), 0, num2Values, 1, num2.getLength());
         num2Values[0] = num2.getValues()[0];//双符号位
 
-        String p3 = "第" + ++count + "步：\n初始化(部分和)sum，将Num1赋值给sum，sum = " + NumberUtils.transString(sum);
-        calculateProcess.add(p3);
+//        String p3 = "第" + ++count + "步：\n初始化(部分和)sum，将Num1赋值给sum，sum = " + NumberUtils.transString(sum);
+//        calculateProcess.add(p3);
 
         String p4 = "";
         if (isTwoBit){
             //二位计算
             for (int i = num2Values.length - 1; i >= 0; i-=2){
-                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
+//                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
                 if (num2Values[i] == 0 && num2Values[i-1] == 0){
-                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
+//                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
                 }else {
                     sum = add(sum, num2Values[i], i);
                     sum = add(sum, num2Values[i-1], i - 1);
-                    p4 += num2Values[i-1] + "" +  num2Values[i] + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
+//                    p4 += num2Values[i-1] + "" +  num2Values[i] + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
                 }
-                calculateProcess.add(p4);
+//                calculateProcess.add(p4);
             }
         }else {
             //一位计算
             //符号位也要加
             for (int i = num2Values.length - 1; i >= 0; i --){
-                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
+//                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
                 if (num2Values[i] != 0){
                     sum = add(sum, num2Values[i], i);
-                    p4 += "1" + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
+//                    p4 += "1" + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
                 }else {
-                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
+//                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
                 }
-                calculateProcess.add(p4);
+//                calculateProcess.add(p4);
             }
         }
+
+        String cutLine = "";
+        if (num1.getBitType() == BinaryNum.TYPE_8_BIT){
+            cutLine = "------------------";
+        }else {
+            cutLine = "---------------------------";
+        }
+        p4 = "第" + ++count + "步：计算过程\n\t" + num1.toString() + "\n+\t" + num2.toString() + "\n"
+                + cutLine
+                +"\n\t" + NumberUtils.transString(sum);
+//        p4 = "   " + num1.toString() + "\n+" + num2.toString() + "\n------------------\n" + NumberUtils.transString(sum);
+        calculateProcess.add(p4);
 
         //判断符号位有没有有溢出 将最高位和次高位的数进行异或，如果结果为 0，则表示 溢出，如果符号位为11，表示负溢出，不处理；
         //如果符号位为00，表示正溢出，去掉最高为的符号位，从次高位开始作为符号位。
@@ -198,19 +210,25 @@ public class BinaryNumOperation {
         LinkedList<String> calculateProcess = new LinkedList<>();
         int count = 1;
 
+        String num1ValuesStr = num1.toString();//保存num1的原码
         num1.transComplementNum();
         Log.d("num1 转为补码：" + num1.toString());
 
         Log.d("[num1 - num2](补) = [num1](补) - [num2](补) = [num1](补) + [-num2](补)");
+        calculateProcess.add("[num1 - num2](补) = [num1](补) - [num2](补) = [num1](补) + [-num2](补)");
         Log.d("num2: " + num2.toString());
         int num2Decimal = num2.getDecimalValue();
         int bitType = num2.getBitType();
         num2 = new BinaryNum(-num2Decimal);//num2 变为 -num2
         num2.transBinaryNumBitLength(bitType);
         Log.d("num2: " + num2.toString());
+        String num2ValuesStr = num2.toString();//保存num2的原码
         num2.transComplementNum();//转为补码
         Log.d("求[-num2](补) = " + num2.toString());
 
+        calculateProcess.add("第" + count + "步：\n求出num1(补)和[-num2](补)\nnum1: " + num1ValuesStr + "(原) -> " + num1.toString() + "(补)，-num2:" + num2ValuesStr + "(原) -> " + num2.toString() + "(补)");
+
+        calculateProcess.add("第" + ++count + "步：\n计算 " + num1.toString() + " + " + num2.toString());
         //处理符号位变成双符号位
         int[] sum = new int[num1.getLength() + 1];//声明多1位，sum为部分和
         //第一步，将num1的值赋给部分和sum
@@ -228,30 +246,42 @@ public class BinaryNumOperation {
         if (isTwoBit){
             //二位计算
             for (int i = num2Values.length - 1; i >= 0; i-=2){
-                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
+//                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
                 if (num2Values[i] == 0 && num2Values[i-1] == 0){
-                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
+//                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
                 }else {
                     sum = add(sum, num2Values[i], i);
                     sum = add(sum, num2Values[i-1], i - 1);
-                    p4 += num2Values[i-1] + "" +  num2Values[i] + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
+//                    p4 += num2Values[i-1] + "" +  num2Values[i] + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
                 }
-                calculateProcess.add(p4);
+//                calculateProcess.add(p4);
             }
         }else {
             //一位计算
             //符号位也要加
             for (int i = num2Values.length - 1; i >= 0; i --){
-                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
+//                p4 = "第" + ++count + "步：\n(部分和)sum = " + NumberUtils.transString(sum) + "，被加数：";
                 if (num2Values[i] != 0){
                     sum = add(sum, num2Values[i], i);
-                    p4 += "1" + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
+//                    p4 += "1" + NumberUtils.createZero(num2Values.length - i - 1) + "，计算结果 sum = " + NumberUtils.transString(sum);
                 }else {
-                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
+//                    p4 += "0，计算结果 sum = " + NumberUtils.transString(sum);
                 }
-                calculateProcess.add(p4);
+//                calculateProcess.add(p4);
             }
         }
+
+        String cutLine = "";
+        if (num1.getBitType() == BinaryNum.TYPE_8_BIT){
+            cutLine = "------------------";
+        }else {
+            cutLine = "---------------------------";
+        }
+        p4 = "第" + ++count + "步：计算过程\n\t" + num1.toString() + "\n+\t" + num2.toString() + "\n"
+                + cutLine
+                +"\n\t" + NumberUtils.transString(sum);
+//        p4 = "   " + num1.toString() + "\n+" + num2.toString() + "\n------------------\n" + NumberUtils.transString(sum);
+        calculateProcess.add(p4);
 
         //进行符号位处理
         //判断符号位有没有有溢出 将最高位和次高位的数进行异或，如果结果为 0，则表示 溢出，如果符号位为11，表示负溢出，不处理；
@@ -272,11 +302,27 @@ public class BinaryNumOperation {
             result = new BinaryNum(sum);
         }
 
+        String p5 = "第" + ++count + "步：\n";
+        p5 += "判断符号位有没有有溢出，将最高位和次高位的数进行异或，如果符号位异或的结果为 0，则表示 溢出，如果符号位为11，表示负溢出，不处理；\n"
+                + "如果符号位为00，表示正溢出，去掉最高为的符号位，从次高位开始作为符号位。\n"
+                + "如果符号位异或的结果为 1，表示不溢出，直接取次高位的数最为符号位。";
+        p5 += "处理的结果（补码）：" + result.toString();
+        calculateProcess.add(p5);
+
         //将结果进行转为原码
         result.transComplementNum();
+
+        String p6 = "第" + ++count + "步：\n" + "再将计算结果转为原码，得到最终的计算结果：result = " + result.toString();
+        calculateProcess.add(p6);
+
+        operation.setOperationWay(Operation.OP_CUT);
         operation.setResult(result);
         operation.setCalculateProcess(calculateProcess);
         Log.d("结果：" + result.getDecimalValue());
+
+        String p7 = "结束：(" + operation.getNum1().getDecimalValue() + ") - (" + operation.getNum2().getDecimalValue() + ") = " + result.getDecimalValue();
+        calculateProcess.add(p7);
+
         return operation;
     }
 

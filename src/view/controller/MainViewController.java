@@ -17,6 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.InputMethodEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import utils.AppDataUtils;
 import utils.Log;
@@ -29,7 +30,7 @@ import java.util.ResourceBundle;
 public class MainViewController implements Initializable {
 
     @FXML
-    private Button mButton;
+    private Button mBtnAdd,mBtnCut,mBtnMulti,mBtnDivision;//加减乘除四个按钮
     @FXML
     private ComboBox<String> mComboBoxBit;//位数
     @FXML
@@ -53,11 +54,13 @@ public class MainViewController implements Initializable {
 
     private String mNum1 = "00";
     private String mNum2 = "00";
+    private int mBitLength = BinaryNum.TYPE_8_BIT;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initComboBox();
         initTextField();
+        initButton();
     }
 
     /**
@@ -116,12 +119,20 @@ public class MainViewController implements Initializable {
         });
     }
 
-    public void buttonAction(ActionEvent event){
+    private void initButton(){
+        mBtnAdd.setOnMouseClicked(event -> calculate(Operation.OP_ADD));
+        mBtnCut.setOnMouseClicked(event -> calculate(Operation.OP_CUT));
+//        mBtnMulti.setOnMouseClicked(event -> calculate(Operation.OP_MUTIL));
+//        mBtnDivision.setOnMouseClicked(event -> calculate(Operation.OP_DIVISION));
+    }
+
+    private void calculate(int calculateType){
         try {
             AppDataUtils.put("num1", mNum1);
             AppDataUtils.put("num2", mNum2);
-            AppDataUtils.put(Operation.TAG, Operation.OP_ADD);
+            AppDataUtils.put(Operation.TAG, calculateType);
             AppDataUtils.put("isTwoBit", "二位计算".equals(mCBoxCalculateType.getValue()));
+            AppDataUtils.put("bitLength", mBitLength);
             new CalculateView().start(new Stage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,6 +141,7 @@ public class MainViewController implements Initializable {
 
     private void updateView(){
         int bitLength = mBitLengthArys[mComboBoxBitData.indexOf(mComboBoxBit.getValue())];
+        mBitLength = bitLength;
         mNum1 = NumberUtils.transBinNum(bitLength, mEditNum1.getText());
         mLabelCNum1.setText(mNum1);
         mLabelONum1.setText(NumberUtils.transComplementNum(bitLength, mEditNum1.getText()));

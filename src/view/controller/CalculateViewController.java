@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import utils.AppDataUtils;
 import utils.Log;
 
@@ -20,12 +21,10 @@ import java.util.ResourceBundle;
 public class CalculateViewController implements Initializable {
 
     @FXML
-    private AnchorPane contentPane;
+    private VBox contentPane;
 
-    @FXML
-    private Button mButton;
-
-    private int mLastViewLayoutY = 30;
+//    @FXML
+//    private Button mButton;
     private BinaryNum mNum1;
     private BinaryNum mNum2;
     private int operationWay;
@@ -35,39 +34,54 @@ public class CalculateViewController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initButton();
+//        initButton();
         mNum1 = new BinaryNum((String) AppDataUtils.get("num1"));
         mNum2 = new BinaryNum((String) AppDataUtils.get("num2"));
+        int bitLength = (int) AppDataUtils.get("bitLength");
+        mNum1.transBinaryNumBitLength(bitLength);
+        mNum2.transBinaryNumBitLength(bitLength);
         operationWay = (int) AppDataUtils.get(Operation.TAG);
         isTwoBit = (boolean) AppDataUtils.get("isTwoBit");
         calculate();//计算
     }
 
-    private void initButton(){
-        mButton.setLayoutX((contentPane.getPrefWidth() - 100)/2);
-        mButton.setOnMouseClicked((event -> {
-            String process = mCalculateProcess.pollFirst();
-            if (process != null && !"".equals(process)){
-                Label label = new Label();
-                label.setLayoutY(mLastViewLayoutY);
-                label.setText(process);
-                contentPane.getChildren().add(label);
-                mLastViewLayoutY += 80;
-            }else {
-                mButton.setDisable(true);
-            }
-        }));
-    }
+//    private void initButton(){
+//        mButton.setLayoutX((contentPane.getPrefWidth() - 100)/2);
+//        mButton.setOnMouseClicked((event -> {
+//            String process = mCalculateProcess.pollFirst();
+//            if (process != null && !"".equals(process)){
+//                Label label = new Label();
+//                label.setLayoutY(mLastViewLayoutY);
+//                label.setText(process);
+//                contentPane.getChildren().add(label);
+//                mLastViewLayoutY += 80;
+//            }else {
+//                mButton.setDisable(true);
+//            }
+//        }));
+//    }
 
     private void calculate(){
         switch (operationWay){
             case Operation.OP_ADD:
                 mOperation = BinaryNumOperation.add(mNum1, mNum2, isTwoBit);
                 break;
+            case Operation.OP_CUT:
+                mOperation = BinaryNumOperation.cut(mNum1, mNum2, isTwoBit);
+                break;
             default:
                 mOperation = BinaryNumOperation.add(mNum1, mNum2, isTwoBit);
         }
         mCalculateProcess = mOperation.getCalculateProcess();
+        while (mCalculateProcess.size() > 0){
+            String process = mCalculateProcess.pollFirst();
+            if (process != null && !"".equals(process)){
+                Label label = new Label();
+//                label.setLayoutY(mLastViewLayoutY);
+                label.setText(process);
+                contentPane.getChildren().add(label);
+            }
+        }
     }
 
 }
