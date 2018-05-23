@@ -6,6 +6,13 @@ import java.util.regex.Pattern;
 
 public class NumberUtils {
 
+    public static void main(String[] strings){
+        Log.d("" + isDouble("1.32"));
+        Log.d("" + isDouble("1.3a"));
+        Log.d("" + isDouble("0.32432.0"));
+        Log.d("" + decimal2Binary(1.587));
+    }
+
     /**
      * 判断是否为整数
      * @param str
@@ -16,6 +23,19 @@ public class NumberUtils {
             return false;
         }
         Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        return pattern.matcher(str).matches();
+    }
+
+    /**
+     * 判断是否为浮点数
+     * @param str
+     * @return
+     */
+    public static boolean isDouble(String str){
+        if (str == null || str.equals("")){
+            return false;
+        }
+        Pattern pattern = Pattern.compile("^(-?\\d+)(\\.\\d+)?$");
         return pattern.matcher(str).matches();
     }
 
@@ -101,6 +121,56 @@ public class NumberUtils {
             builder.append(0);
         }
         return builder.toString();
+    }
+
+    /**
+     * 浮点数转二进制数
+     * @param value
+     * @return
+     */
+    public static String decimal2Binary(double value){
+        // 整数部分的值
+        int in = (int) value;
+        System.out.println("The integer is: " + in);
+        // 小数部分的值
+        double r = value - in;
+        System.out.println("The decimal number is: " + r);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        // 将整数部分转化为二进制
+        int remainder = 0;
+        int quotient = 0;
+        while (in != 0) {
+            // 得商
+            quotient = in / 2;
+            // 得余数
+            remainder = in % 2;
+            stringBuilder.append(remainder);
+            in = quotient;
+        }
+        stringBuilder.reverse();
+        stringBuilder.append(".");
+
+        // 将小数部分转化为二进制
+        int count = 32; // 限制小数部分位数最多为32位，如果超过32为则抛出异常
+        double num = 0;
+        while (r > 0.0000000001) {
+            count--;
+            if (count == 0) {
+                Log.d("Cannot change the decimal number to binary!");
+                return "";
+            }
+            num = r * 2;
+            if (num >= 1) {
+                stringBuilder.append(1);
+                r = num - 1;
+            } else {
+                stringBuilder.append(0);
+                r = num;
+            }
+        }
+
+        return stringBuilder.toString();
     }
 
 }
