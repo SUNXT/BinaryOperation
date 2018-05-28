@@ -10,11 +10,9 @@ import java.util.LinkedList;
 public class BinaryNumOperation {
 
     public static void main(String[] args){
-        BinaryNum num = new BinaryNum(32);
-        BinaryNum num1 = new BinaryNum(1);
-        num.transBinaryNumBitLength(BinaryNum.TYPE_16_BIT);
-        num1.transBinaryNumBitLength(BinaryNum.TYPE_16_BIT);
-        cut(num, num1, false);
+        DoubleBinaryNum num = new DoubleBinaryNum(0.213, 16);
+        DoubleBinaryNum num1 = new DoubleBinaryNum(0.13, 16);
+        add(num, num1);
     }
 
 
@@ -324,6 +322,29 @@ public class BinaryNumOperation {
         calculateProcess.add(p7);
 
         return operation;
+    }
+
+    /**
+     * 纯小数的加法
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public static void add(DoubleBinaryNum num1, DoubleBinaryNum num2){
+        Log.d("num1: " + num1.getDoubleValue() + ", bin: " + num1.toString());
+        Log.d("num2: " + num2.getDoubleValue() + ", bin: " + num2.toString());
+        num1.transComplementNum();
+        num2.transComplementNum();
+        //将符号位拓展一位
+        int []num1Values = new int[num1.getValues().length + 1];
+        System.arraycopy(num1.getValues(), 0, num1Values, 1, num1Values.length - 1);
+        num1Values[0] = num1.getValues()[0];
+        Log.d("num1算符号位", num1Values);
+        //将符号位拓展一位
+        int []num2Values = new int[num2.getValues().length + 1];
+        System.arraycopy(num2.getValues(), 0, num2Values, 1, num2Values.length - 1);
+        num2Values[0] = num2.getValues()[0];
+        Log.d("num2算符号位", num2Values);
     }
 
 }
