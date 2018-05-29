@@ -1,11 +1,13 @@
 package binary;
 
+import javafx.beans.property.SimpleStringProperty;
+
 import java.util.LinkedList;
 
 /**
 * 操作类
 */
-public class Operation{
+public class Operation<Process>{
 
         public static final String TAG = "Operation";
 
@@ -19,7 +21,7 @@ public class Operation{
         private BinaryNum result;
         private String calculateExplanation;//计算说明
         private int operationWay;//计算方式
-        private LinkedList<String> calculateProcess;//计算过程
+        private LinkedList<Process> calculateProcess;//计算过程
 
         public BinaryNum getNum1() {
             return num1;
@@ -61,12 +63,67 @@ public class Operation{
             this.calculateExplanation = calculateExplanation;
         }
 
-        public LinkedList<String> getCalculateProcess() {
+        public LinkedList<Process> getCalculateProcess() {
             return calculateProcess;
         }
 
-        public void setCalculateProcess(LinkedList<String> calculateProcess) {
+        public void setCalculateProcess(LinkedList<Process> calculateProcess) {
             this.calculateProcess = calculateProcess;
         }
 
+
+    /**
+     * 乘法计算过程
+     */
+    public static class MultiProcess{
+        private SimpleStringProperty explanation = new SimpleStringProperty();//乘法过程的说明
+        private SimpleStringProperty partResult = new SimpleStringProperty();//部分积
+        private SimpleStringProperty beAddNum = new SimpleStringProperty();//被加数
+
+        public String getExplanation() {
+            return explanation.get();
+        }
+
+        public SimpleStringProperty explanationProperty() {
+            return explanation;
+        }
+
+        public void setExplanation(String explanation) {
+            this.explanation.set(explanation);
+        }
+
+        public String getPartResult() {
+            return partResult.get();
+        }
+
+        public SimpleStringProperty partResultProperty() {
+            return partResult;
+        }
+
+        public void setPartResult(String partResult) {
+            this.partResult.set(partResult);
+        }
+
+        public String getBeAddNum() {
+            return beAddNum.get();
+        }
+
+        public SimpleStringProperty beAddNumProperty() {
+            return beAddNum;
+        }
+
+        public void setBeAddNum(String beAddNum) {
+            this.beAddNum.set(beAddNum);
+        }
+
+        @Override
+        public String toString() {
+            return "MultiProcess{" +
+                    "explanation=" + explanation +
+                    ", partResult=" + partResult +
+                    ", beAddNum=" + beAddNum +
+                    '}';
+        }
     }
+
+}

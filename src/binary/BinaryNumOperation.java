@@ -10,9 +10,20 @@ import java.util.LinkedList;
 public class BinaryNumOperation {
 
     public static void main(String[] args){
-        DoubleBinaryNum num = new DoubleBinaryNum(0.213, 16);
-        DoubleBinaryNum num1 = new DoubleBinaryNum(0.13, 16);
-        add(num, num1);
+//        DoubleBinaryNum num = new DoubleBinaryNum(0.213, 16);
+//        DoubleBinaryNum num1 = new DoubleBinaryNum(0.13, 16);
+//        add(num, num1);
+
+        BinaryNum num = new BinaryNum(14);
+        BinaryNum num1 = new BinaryNum(8);
+//        num.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
+        multi(num, num1, false);
+//
+//        int[] num1 = {0,1};
+//        int[] num2 = {1,0,0,1};
+//        Log.d("num1", num1);
+//        Log.d("num2", num2);
+//        Log.d("result", add(num1, num2));
     }
 
 
@@ -38,7 +49,7 @@ public class BinaryNumOperation {
         Log.d("num2: " + num2.toString());
         Log.println();
 
-        Operation operation = new Operation();
+        Operation<String> operation = new Operation<>();
         operation.setNum1(new BinaryNum(num1.getValues()));
         operation.setNum2(new BinaryNum(num2.getValues()));
         operation.setOperationWay(Operation.OP_ADD);
@@ -345,6 +356,99 @@ public class BinaryNumOperation {
         System.arraycopy(num2.getValues(), 0, num2Values, 1, num2Values.length - 1);
         num2Values[0] = num2.getValues()[0];
         Log.d("num2算符号位", num2Values);
+    }
+
+    /**
+     * 乘法
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public static Operation<Operation.MultiProcess> multi(BinaryNum num1, BinaryNum num2, boolean isTwoBit){
+        Operation<Operation.MultiProcess> operation = new Operation<>();
+        operation.setNum1(num1);
+        operation.setNum2(num2);
+        LinkedList<Operation.MultiProcess> processes = new LinkedList<>();//计算过程
+
+        int resultSign = num1.getValues()[0] ^ num2.getValues()[0];//num1的符号位异或num2的符号位得到计算结果的符号位
+        int[] num1Values = new int[num1.getLength() - 1];//用于保存num1数值部分
+        int[] num2Values = new int[num2.getLength() - 1];//用于保存num2数值部分
+        //将num1,num2数值部分的数组赋值到新数组中
+        System.arraycopy(num1.getValues(), 1, num1Values, 0, num1Values.length);
+        System.arraycopy(num2.getValues(), 1, num2Values, 0, num2Values.length);
+        Log.d("num1Values: ", num1Values);
+        Log.d("num2Values: ", num2Values);
+        //num1Values作为乘法中的被加数
+        int[] tempValues = new int[num1Values.length];//初始化部分积
+        //从num2Values的最右边数开始乘起，如果是一，则直接加上num1Values
+        int[] beAddNum;//每次的被加数
+        Operation.MultiProcess multiProcess;//乘法计算步骤
+        //一步一步加
+        for (int i = num2Values.length - 1, j = 0; i >= 0; --i, ++j){
+            multiProcess = new Operation.MultiProcess();
+            multiProcess.setPartResult(NumberUtils.transString(tempValues));//部分积
+            if (num2Values[i] == 1){
+                beAddNum = fillZero(num1Values, j);//被加数
+                tempValues = add(tempValues, beAddNum);
+                Log.d("tempValues", tempValues);
+                multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
+            }else {
+                multiProcess.setBeAddNum("0");
+            }
+            String explanation = "num2第" + (j+1) + "位为" + num2Values[i] +", 此时被加数为" + multiProcess.getBeAddNum()+ ", 部分积为" + multiProcess.getPartResult() + ", 计算完部分积为 " + NumberUtils.transString(tempValues);
+            multiProcess.setExplanation(explanation);
+            processes.add(multiProcess);
+        }
+
+        operation.setCalculateProcess(processes);
+        BinaryNum result = new BinaryNum(resultSign + NumberUtils.transString(tempValues));
+        operation.setResult(result);
+        Log.d(num1.getDecimalValue() + " * " + num2.getDecimalValue() + " = " + result.getDecimalValue());
+
+        for (Operation.MultiProcess process: processes){
+            Log.d(process.toString());
+        }
+        return operation;
+    }
+
+    /**
+     * 两个0/1数组相加
+     * num1 和 num2
+     * @param num1 加数数组
+     * @param num2 被加数数组
+     * @return 计算结果
+     */
+    private static int[] add(int[] num1, int[] num2){
+        int[] result = new int[Math.max(num1.length, num2.length) + 1];//计算结果为两个数组中最长数组+1，防止溢出
+        int[] temp;
+        if (num1.length < num2.length){
+            System.arraycopy(num1, 0, result, result.length - num1.length, num1.length);//将num1从右边赋值到result中，例如result是4位，num1=101，则赋值后，result为 0101
+            temp = num2;//被加数为num2
+        }else {
+            System.arraycopy(num2, 0, result, result.length - num2.length, num2.length);//将num1从右边赋值到result中，例如result是4位，num2=101，则赋值后，result为 0101
+            temp = num1;//被加数为num1
+        }
+        for (int i = result.length - 1, j = temp.length - 1; i >= 0 && j >= 0; i --, j --){
+            if (temp[j] == 1){
+                result = add(result, 1, i);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 拓展数组，后面补0
+     * @param src
+     * @param zeroLength
+     * @return
+     */
+    private static int[] fillZero(int[] src, int zeroLength){
+        if (zeroLength == 0)
+            return src;
+
+        int[] result = new int[src.length + zeroLength];
+        System.arraycopy(src, 0, result, 0, src.length);
+        return result;
     }
 
 }
