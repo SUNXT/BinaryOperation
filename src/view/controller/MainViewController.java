@@ -131,7 +131,7 @@ public class MainViewController implements Initializable {
             AppDataUtils.put("num1", mNum1);
             AppDataUtils.put("num2", mNum2);
             AppDataUtils.put(Operation.TAG, calculateType);
-            AppDataUtils.put("isTwoBit", "二位计算".equals(mCBoxCalculateType.getValue()));
+            AppDataUtils.put("isTwoBit", "二位运算".equals(mCBoxCalculateType.getValue()));
             AppDataUtils.put("bitLength", mBitLength);
             new CalculateView().start(new Stage());
         } catch (Exception e) {

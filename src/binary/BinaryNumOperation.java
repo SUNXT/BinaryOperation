@@ -5,19 +5,21 @@ import utils.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.TreeMap;
 
 
 public class BinaryNumOperation {
 
     public static void main(String[] args){
-//        DoubleBinaryNum num = new DoubleBinaryNum(0.213, 16);
-//        DoubleBinaryNum num1 = new DoubleBinaryNum(0.13, 16);
-//        add(num, num1);
-
-        BinaryNum num = new BinaryNum(14);
-        BinaryNum num1 = new BinaryNum(8);
+        DoubleBinaryNum num = new DoubleBinaryNum(-0.99, 8);
+        DoubleBinaryNum num1 = new DoubleBinaryNum(0.999, 8);
+        add(num, num1);
+//
+//        BinaryNum num = new BinaryNum(14);
+//        BinaryNum num1 = new BinaryNum(8);
 //        num.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
-        multi(num, num1, false);
+//        num1.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
+//        multi(num, num1, true);
 //
 //        int[] num1 = {0,1};
 //        int[] num2 = {1,0,0,1};
@@ -346,16 +348,37 @@ public class BinaryNumOperation {
         Log.d("num2: " + num2.getDoubleValue() + ", bin: " + num2.toString());
         num1.transComplementNum();
         num2.transComplementNum();
-        //将符号位拓展一位
-        int []num1Values = new int[num1.getValues().length + 1];
-        System.arraycopy(num1.getValues(), 0, num1Values, 1, num1Values.length - 1);
+        //拓展num1，使其变成双符号位
+        int[] num1Values = new int[num1.getValues().length + 1];
+        System.arraycopy(num1.getValues(), 0, num1Values, 1, num1.getValues().length);
         num1Values[0] = num1.getValues()[0];
-        Log.d("num1算符号位", num1Values);
-        //将符号位拓展一位
-        int []num2Values = new int[num2.getValues().length + 1];
-        System.arraycopy(num2.getValues(), 0, num2Values, 1, num2Values.length - 1);
+        //拓展num2，使其变成双符号位
+        int[] num2Values = new int[num2.getValues().length + 1];
+        System.arraycopy(num2.getValues(), 0, num2Values, 1, num2.getValues().length);
         num2Values[0] = num2.getValues()[0];
-        Log.d("num2算符号位", num2Values);
+
+        int[] result = add(num1Values, num2Values);
+        Log.d("num1", num1.getValues());
+        Log.d("num2", num2.getValues());
+        Log.d("sum", result);
+
+        //去掉第一位
+        int[] temp = new int[result.length - 1];
+        System.arraycopy(result, 1, temp, 0, temp.length);
+        result = temp;
+        //进行溢出判断
+        if ((result[0]^result[1]) == 0){
+            //如果是负溢出 11
+            if (result[0] == 1){
+                //不处理
+            }else {
+                //正溢出 00
+                int[] newSum = new int[result.length - 1];
+                System.arraycopy(result, 1, newSum, 0, newSum.length);
+            }
+        }
+
+
     }
 
     /**
@@ -383,21 +406,69 @@ public class BinaryNumOperation {
         //从num2Values的最右边数开始乘起，如果是一，则直接加上num1Values
         int[] beAddNum;//每次的被加数
         Operation.MultiProcess multiProcess;//乘法计算步骤
-        //一步一步加
-        for (int i = num2Values.length - 1, j = 0; i >= 0; --i, ++j){
-            multiProcess = new Operation.MultiProcess();
-            multiProcess.setPartResult(NumberUtils.transString(tempValues));//部分积
-            if (num2Values[i] == 1){
-                beAddNum = fillZero(num1Values, j);//被加数
-                tempValues = add(tempValues, beAddNum);
-                Log.d("tempValues", tempValues);
-                multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
-            }else {
-                multiProcess.setBeAddNum("0");
+        if (isTwoBit){
+            //这是二位运算,每次计算num2的两位乘，被乘数两位的情况有 00 01 10 11
+            //当00时，被乘数为0，此时被加数为0
+            //当01时，被乘数为1，此时被加数为 num1(后面补零，使其对应上被乘数的位置)
+            //当10时，被乘数为2，此时被加数为 num1*2(后面补零，使其对应上被乘数的位置)
+            //当11时，被乘数为3，此时被加数为 num1*3(后面补零，使其对应上被乘数的位置)
+            //先计算num1*2 和 num2*3
+            int[] num1ValuesD2 = new int[num1Values.length + 1];// num1*2
+            System.arraycopy(num1Values, 0, num1ValuesD2, 0, num1Values.length);//将num1向左移动一位
+            Log.d("num1", num1Values);
+            Log.d("num1*2", num1ValuesD2);
+            int[] num1ValuesD3 = add(num1Values, num1ValuesD2);
+            Log.d("num*3", num1ValuesD3);
+            for (int i = num2Values.length - 1, j = 0; i >= 0;  i-=2, j +=2){
+                multiProcess = new Operation.MultiProcess();//记录两位乘的过程
+                multiProcess.setPartResult(NumberUtils.transString(tempValues));
+                String explanation;
+                switch (num2Values[i-1] + "" + num2Values[i]){
+                    case "00":
+                        Log.d("00");
+                        multiProcess.setBeAddNum("0");
+                        break;
+                    case "01":
+                        Log.d("01");
+                        beAddNum = fillZero(num1Values, j);
+                        multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
+                        tempValues = add(tempValues, beAddNum);
+                        break;
+                    case "10":
+                        Log.d("10");
+                        beAddNum = fillZero(num1ValuesD2, j);
+                        multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
+                        tempValues = add(tempValues, beAddNum);
+                        break;
+                    case "11":
+                        Log.d("11");
+                        beAddNum = fillZero(num1ValuesD3, j);
+                        multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
+                        tempValues = add(tempValues, beAddNum);
+                        break;
+                }
+                explanation = "num2第" + (j+1) + " " + (j + 2) + "位值为 " + num2Values[i-1] + "" + num2Values[i] + ", 此时的被加数为 " + multiProcess.getBeAddNum() + ", 部分积为" + multiProcess.getPartResult() + ", 计算完的部分积为" + NumberUtils.transString(tempValues);
+                multiProcess.setExplanation(explanation);
+                processes.add(multiProcess);
             }
-            String explanation = "num2第" + (j+1) + "位为" + num2Values[i] +", 此时被加数为" + multiProcess.getBeAddNum()+ ", 部分积为" + multiProcess.getPartResult() + ", 计算完部分积为 " + NumberUtils.transString(tempValues);
-            multiProcess.setExplanation(explanation);
-            processes.add(multiProcess);
+            Log.d("result", tempValues);
+        }else {
+            //这是一位乘运算,j是补0的个数
+            for (int i = num2Values.length - 1, j = 0; i >= 0; --i, ++j){
+                multiProcess = new Operation.MultiProcess();//用于记录每一位乘的过程
+                multiProcess.setPartResult(NumberUtils.transString(tempValues));//记录当前部分积
+                if (num2Values[i] == 1){
+                    beAddNum = fillZero(num1Values, j);//被加数
+                    tempValues = add(tempValues, beAddNum);
+                    Log.d("tempValues", tempValues);
+                    multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
+                }else {
+                    multiProcess.setBeAddNum("0");
+                }
+                String explanation = "num2第" + (j+1) + "位为" + num2Values[i] +", 此时被加数为" + multiProcess.getBeAddNum()+ ", 部分积为" + multiProcess.getPartResult() + ", 计算完部分积为 " + NumberUtils.transString(tempValues);
+                multiProcess.setExplanation(explanation);
+                processes.add(multiProcess);
+            }
         }
 
         operation.setCalculateProcess(processes);
