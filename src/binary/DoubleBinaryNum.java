@@ -1,11 +1,10 @@
 package binary;
 
-import com.sun.xml.internal.txw2.TXW;
 import utils.Log;
 import utils.NumberUtils;
 
 /**
- * 纯小数的二进制表示
+ * 带小数的二进制表示
  */
 public class DoubleBinaryNum {
 

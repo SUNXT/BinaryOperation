@@ -1,20 +1,23 @@
 package binary;
 
+import binary.base.BaseBinaryNumOperation;
 import utils.Log;
 import utils.NumberUtils;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.TreeMap;
 
 
-public class BinaryNumOperation {
+public class BinaryNumOperation extends BaseBinaryNumOperation{
 
     public static void main(String[] args){
-        DoubleBinaryNum num = new DoubleBinaryNum(-0.929, 8);
-        DoubleBinaryNum num1 = new DoubleBinaryNum(0.99, 8);
-        add(num, num1);
-//
+
+//        BinaryNum num1 = new BinaryNum("11100");
+//        BinaryNum num2 = new BinaryNum("11000");
+//        add(num1, num2, false);
+//        DoubleBinaryNum num = new DoubleBinaryNum(-12.929, 8);
+//        DoubleBinaryNum num1 = new DoubleBinaryNum(0.192, 8);
+//        add(num, num1);
+////
 //        BinaryNum num = new BinaryNum(14);
 //        BinaryNum num1 = new BinaryNum(8);
 //        num.transBinaryNumBitLength(BinaryNum.TYPE_8_BIT);
@@ -26,6 +29,10 @@ public class BinaryNumOperation {
 //        Log.d("num1", num1);
 //        Log.d("num2", num2);
 //        Log.d("result", add(num1, num2));
+
+        BinaryNum num1 = new BinaryNum(-12);
+        BinaryNum num2 = new BinaryNum(13);
+        division(num1, num2);
     }
 
 
@@ -176,35 +183,6 @@ public class BinaryNumOperation {
     }
 
     /**
-     *
-     * @param oldValues 被加数的原来数组
-     * @param value 要加的值
-     * @param index 要加的值的位数
-     * @return
-     */
-    private static int[] add(int[] oldValues, int value, int index){
-
-        if (index < 0 ){
-            return oldValues;//已经到第一位，不需要做处理
-        }
-
-        // 如果是0不需要做处理
-        if (value == 0){
-            return oldValues;
-        }
-
-        if (oldValues[index] + 1 == 2){
-            //进1 将原来位设为0，同时调用递归 进行加1
-            oldValues[index] = 0;
-            return add(oldValues, 1, index - 1);
-        }else {
-            //不进位
-            oldValues[index] = 1;
-            return oldValues;
-        }
-    }
-
-    /**
      * 一位、二位补码减法
      * @param num1
      * @param num2
@@ -338,58 +316,6 @@ public class BinaryNumOperation {
     }
 
     /**
-     * 纯小数的加法
-     * @param num1
-     * @param num2
-     * @return
-     */
-    public static void add(DoubleBinaryNum num1, DoubleBinaryNum num2){
-        Log.d("num1: " + num1.getDoubleValue() + ", bin: " + num1.toString());
-        Log.d("num2: " + num2.getDoubleValue() + ", bin: " + num2.toString());
-        num1.transComplementNum();
-        num2.transComplementNum();
-        Log.d(num1.toString() + " " + num2.toString());
-        //拓展num1，使其变成双符号位
-        int[] num1Values = new int[num1.getValues().length + 1];
-        System.arraycopy(num1.getValues(), 0, num1Values, 1, num1.getValues().length);
-        num1Values[0] = num1.getValues()[0];
-        //拓展num2，使其变成双符号位
-        int[] num2Values = new int[num2.getValues().length + 1];
-        System.arraycopy(num2.getValues(), 0, num2Values, 1, num2.getValues().length);
-        num2Values[0] = num2.getValues()[0];
-
-        int[] result = add(num1Values, num2Values);
-        Log.d("num1", num1Values);
-        Log.d("num2", num2Values);
-        Log.d("sum", result);
-
-        DoubleBinaryNum doubleBinaryNumResult;
-        //进行溢出判断
-        if ((result[0]^result[1]) == 0){
-            //如果是负溢出或正溢出，取最高
-            int[] newSum = new int[result.length - 1];
-            System.arraycopy(result, 1, newSum, 0, newSum.length);
-
-            if (result[0] == 1){
-                //负溢出
-                newSum[0] = 1;
-            }else {
-                //正溢出 01
-                newSum[0] = 0;
-            }
-            result = newSum;
-        }
-        doubleBinaryNumResult = new DoubleBinaryNum(result, num1.getBitLength());
-        Log.d("num1: " + num1.toString());
-        Log.d("num2: " + num2.toString());
-        Log.d("result:" + doubleBinaryNumResult.toString());
-        num1.transComplementNum();
-        num2.transComplementNum();
-        doubleBinaryNumResult.transComplementNum();
-        Log.d(num1.getDoubleValue() + " + " + num2.getDoubleValue() + " = " + doubleBinaryNumResult.getDoubleValue());
-    }
-
-    /**
      * 乘法
      * @param num1
      * @param num2
@@ -438,19 +364,19 @@ public class BinaryNumOperation {
                         break;
                     case "01":
                         Log.d("01");
-                        beAddNum = fillZero(num1Values, j);
+                        beAddNum = fillZeroBehind(num1Values, j);
                         multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
                         tempValues = add(tempValues, beAddNum);
                         break;
                     case "10":
                         Log.d("10");
-                        beAddNum = fillZero(num1ValuesD2, j);
+                        beAddNum = fillZeroBehind(num1ValuesD2, j);
                         multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
                         tempValues = add(tempValues, beAddNum);
                         break;
                     case "11":
                         Log.d("11");
-                        beAddNum = fillZero(num1ValuesD3, j);
+                        beAddNum = fillZeroBehind(num1ValuesD3, j);
                         multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
                         tempValues = add(tempValues, beAddNum);
                         break;
@@ -466,7 +392,7 @@ public class BinaryNumOperation {
                 multiProcess = new Operation.MultiProcess();//用于记录每一位乘的过程
                 multiProcess.setPartResult(NumberUtils.transString(tempValues));//记录当前部分积
                 if (num2Values[i] == 1){
-                    beAddNum = fillZero(num1Values, j);//被加数
+                    beAddNum = fillZeroBehind(num1Values, j);//被加数
                     tempValues = add(tempValues, beAddNum);
                     Log.d("tempValues", tempValues);
                     multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
@@ -490,44 +416,38 @@ public class BinaryNumOperation {
         return operation;
     }
 
-    /**
-     * 两个0/1数组相加
-     * num1 和 num2
-     * @param num1 加数数组
-     * @param num2 被加数数组
-     * @return 计算结果
-     */
-    private static int[] add(int[] num1, int[] num2){
-        int[] result = new int[Math.max(num1.length, num2.length) + 1];//计算结果为两个数组中最长数组+1，防止溢出
-        int[] temp;
-        if (num1.length < num2.length){
-            System.arraycopy(num1, 0, result, result.length - num1.length, num1.length);//将num1从右边赋值到result中，例如result是4位，num1=101，则赋值后，result为 0101
-            temp = num2;//被加数为num2
-        }else {
-            System.arraycopy(num2, 0, result, result.length - num2.length, num2.length);//将num1从右边赋值到result中，例如result是4位，num2=101，则赋值后，result为 0101
-            temp = num1;//被加数为num1
-        }
-        for (int i = result.length - 1, j = temp.length - 1; i >= 0 && j >= 0; i --, j --){
-            if (temp[j] == 1){
-                result = add(result, 1, i);
-            }
-        }
-        return result;
-    }
 
     /**
-     * 拓展数组，后面补0
-     * @param src
-     * @param zeroLength
+     * 除法运算 num1/num2
+     * 采用加减交替法
+     * @param num1
+     * @param num2
      * @return
      */
-    private static int[] fillZero(int[] src, int zeroLength){
-        if (zeroLength == 0)
-            return src;
+    public static Operation division(BinaryNum num1, BinaryNum num2){
+        Operation operation = new Operation();
+        operation.setNum1(num1.createNewOne());
+        operation.setNum2(num2.createNewOne());
 
-        int[] result = new int[src.length + zeroLength];
-        System.arraycopy(src, 0, result, 0, src.length);
-        return result;
+        Log.d("num1(原)", num1.getValues());
+        Log.d("num2(原)", num2.getValues());
+
+        //求出num1(补) num2(补) (-num2)(补)
+        num1.transComplementNum();
+        int[] num1Values = num1.getValues();
+        BinaryNum dNum2 = new BinaryNum(-num2.getDecimalValue());
+        Log.d("-num2(原)", dNum2.getValues());
+        dNum2.transComplementNum();
+        int[] dNum2Values = dNum2.getValues();
+        num2.transComplementNum();
+        int[] num2Values = num2.getValues();
+
+        Log.d("num1(补)", num1Values);
+        Log.d("num2(补)", num2Values);
+        Log.d("-num2(补)", dNum2Values);
+
+
+        return operation;
     }
 
 }

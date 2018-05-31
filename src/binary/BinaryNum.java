@@ -70,12 +70,12 @@ public class BinaryNum {
 
         newValues[0] = values[0];//符号位不变
         System.arraycopy(values, 1, newValues, newValues.length - values.length + 1, values.length - 1);
-        Log.d("before trans");
+//        Log.d("before trans");
         for (int i : values){
             System.out.print(i);
         }
         Log.println();
-        Log.d("after trans");
+//        Log.d("after trans");
         for (int i: newValues){
             System.out.print(i);
         }
@@ -96,7 +96,7 @@ public class BinaryNum {
 
         //为负数，需要转换，从右往左扫描，遇到第一位1后的字节，进行反码处理
         int rightOneIndex = text.lastIndexOf("1");//找从右边数过来第一个1 的位置
-        Log.d("the right one index is " + rightOneIndex);
+//        Log.d("the right one index is " + rightOneIndex);
         int i = rightOneIndex - 1;
         while (i > 0){
             if (values[i] == 0){
@@ -153,6 +153,14 @@ public class BinaryNum {
     @Override
     public String toString() {
         return text;
+    }
+
+    /**
+     * 构造一个新的二进制对象
+     * @return
+     */
+    public BinaryNum createNewOne(){
+        return new BinaryNum(values);
     }
 
 
