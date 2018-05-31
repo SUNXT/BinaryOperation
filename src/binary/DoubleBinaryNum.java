@@ -1,5 +1,6 @@
 package binary;
 
+import com.sun.xml.internal.txw2.TXW;
 import utils.Log;
 import utils.NumberUtils;
 
@@ -14,6 +15,12 @@ public class DoubleBinaryNum {
     private int[] values;//保存二进制数据,只保存小数点后面的数字
     private String text;//二进制表示的字符串
     private int bitLength;//二进制的位数，指的是小数点后的位数
+
+    public DoubleBinaryNum(int[] values, int bitLength){
+        this.values = values;
+        this.bitLength = bitLength;
+        updateText();
+    }
 
     public DoubleBinaryNum(double decimalNum, int bitLength) {
         text = NumberUtils.decimal2DoubleBinary(decimalNum, bitLength);
@@ -46,15 +53,10 @@ public class DoubleBinaryNum {
             return;
         }
 
-        StringBuilder builder = new StringBuilder();
-        builder.append(values[0] );
-        builder.append(values[1]);
-        builder.append(".");
-        for (int i = 2; i < values.length; ++ i){
-            builder.append(values[i]);
-        }
-        text = builder.toString();
-        Log.d("update text, text = " + text);
+        String temp = NumberUtils.transString(values);
+        //添加小数点
+        text = temp.substring(0, values.length - bitLength) + "." + temp.substring(values.length - bitLength, temp.length());
+//        Log.d("update text, text = " + text);
     }
 
     /**
@@ -69,7 +71,7 @@ public class DoubleBinaryNum {
 
         //为负数，需要转换，从右往左扫描，遇到第一位1后的字节，进行反码处理
         int rightOneIndex = text.replace(".", "").lastIndexOf("1");//找从右边数过来第一个1 的位置
-        Log.d("the right one index is " + rightOneIndex);
+//        Log.d("the right one index is " + rightOneIndex);
         int i = rightOneIndex - 1;
         while (i > 0){
             if (values[i] == 0){
@@ -89,13 +91,15 @@ public class DoubleBinaryNum {
     public double getDoubleValue(){
         double dv = 0.0d;
         double temp = 1/2d;
-        for (int i = 2; i < values.length; ++i){
+        for (int i = values.length - bitLength; i < values.length; ++i){
             if (values[i] == 1){
                 dv += temp;
             }
             temp /= 2;
         }
-        dv += values[1];//加上整数部分
+        String decimalStr = text.substring(1, text.indexOf("."));
+        Log.d("decimalBin=" + decimalStr);
+        dv += Integer.valueOf(decimalStr, 2);//加上整数部分
         if (values[0] == 1){
             dv = -dv;//变符号
         }
@@ -116,11 +120,12 @@ public class DoubleBinaryNum {
     }
 
     public static void main(String[] strings){
-        double n = -0.312;
+        double n = -4.312;
         DoubleBinaryNum num = new DoubleBinaryNum(n, 16);
         Log.d(num.toString());
         num.transComplementNum();
         Log.d(num.toString());
+        num.transComplementNum();
         Log.d("d : " + num.getDoubleValue());
 
         num = new DoubleBinaryNum(-n, 16);

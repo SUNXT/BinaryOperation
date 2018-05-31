@@ -11,8 +11,8 @@ import java.util.TreeMap;
 public class BinaryNumOperation {
 
     public static void main(String[] args){
-        DoubleBinaryNum num = new DoubleBinaryNum(-0.99, 8);
-        DoubleBinaryNum num1 = new DoubleBinaryNum(0.999, 8);
+        DoubleBinaryNum num = new DoubleBinaryNum(-0.929, 8);
+        DoubleBinaryNum num1 = new DoubleBinaryNum(0.99, 8);
         add(num, num1);
 //
 //        BinaryNum num = new BinaryNum(14);
@@ -133,11 +133,11 @@ public class BinaryNumOperation {
         //如果符号位异或的结果为 1，表示不溢出，直接取次高位的数最为符号位
         BinaryNum result;
         if ((sum[0]^sum[1]) == 0){
-            //如果是负溢出 11
+            //如果是负溢出 10
             if (sum[0] == 1){
                 result = new BinaryNum(sum);//不处理
             }else {
-                //正溢出 00
+                //正溢出 01
                 int[] newSum = new int[sum.length - 1];
                 System.arraycopy(sum, 1, newSum, 0, newSum.length);
                 result = new BinaryNum(newSum);
@@ -348,6 +348,7 @@ public class BinaryNumOperation {
         Log.d("num2: " + num2.getDoubleValue() + ", bin: " + num2.toString());
         num1.transComplementNum();
         num2.transComplementNum();
+        Log.d(num1.toString() + " " + num2.toString());
         //拓展num1，使其变成双符号位
         int[] num1Values = new int[num1.getValues().length + 1];
         System.arraycopy(num1.getValues(), 0, num1Values, 1, num1.getValues().length);
@@ -358,27 +359,34 @@ public class BinaryNumOperation {
         num2Values[0] = num2.getValues()[0];
 
         int[] result = add(num1Values, num2Values);
-        Log.d("num1", num1.getValues());
-        Log.d("num2", num2.getValues());
+        Log.d("num1", num1Values);
+        Log.d("num2", num2Values);
         Log.d("sum", result);
 
-        //去掉第一位
-        int[] temp = new int[result.length - 1];
-        System.arraycopy(result, 1, temp, 0, temp.length);
-        result = temp;
+        DoubleBinaryNum doubleBinaryNumResult;
         //进行溢出判断
         if ((result[0]^result[1]) == 0){
-            //如果是负溢出 11
+            //如果是负溢出或正溢出，取最高
+            int[] newSum = new int[result.length - 1];
+            System.arraycopy(result, 1, newSum, 0, newSum.length);
+
             if (result[0] == 1){
-                //不处理
+                //负溢出
+                newSum[0] = 1;
             }else {
-                //正溢出 00
-                int[] newSum = new int[result.length - 1];
-                System.arraycopy(result, 1, newSum, 0, newSum.length);
+                //正溢出 01
+                newSum[0] = 0;
             }
+            result = newSum;
         }
-
-
+        doubleBinaryNumResult = new DoubleBinaryNum(result, num1.getBitLength());
+        Log.d("num1: " + num1.toString());
+        Log.d("num2: " + num2.toString());
+        Log.d("result:" + doubleBinaryNumResult.toString());
+        num1.transComplementNum();
+        num2.transComplementNum();
+        doubleBinaryNumResult.transComplementNum();
+        Log.d(num1.getDoubleValue() + " + " + num2.getDoubleValue() + " = " + doubleBinaryNumResult.getDoubleValue());
     }
 
     /**
