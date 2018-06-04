@@ -480,13 +480,13 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
             if (remainderValues[0] == 0){
                 // 余数大于0
                 // + [-num2](补)
-                dNum2Values = moveRight(dNum2Values, i, 1);
-                remainderValues = add(remainderValues, dNum2Values);
+                int[] tempDNum2Values = moveRight(dNum2Values, i, 1);
+                remainderValues = add(remainderValues, tempDNum2Values);
             }else {
                 // 余数小于0
                 // + [num2](补)
-                num1Values = moveRight(num1Values, i, 0);
-                remainderValues = add(remainderValues, num2Values);
+                int[] tempNum2Value = moveRight(num2Values, i, 0);
+                remainderValues = add(remainderValues, tempNum2Value);
             }
 
             //将商的结果拼接上去，如果余数大于0，则商拼接1，否则拼接0
