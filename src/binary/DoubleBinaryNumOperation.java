@@ -199,7 +199,7 @@ public class DoubleBinaryNumOperation extends BaseBinaryNumOperation implements 
         int[] num1Values = new int[num1.getValues().length - 1];//用于保存num1数值部分
         int[] num2Values = new int[num2.getValues().length - 1];//用于保存num2数值部分
 
-        //将num1,num2数值部分的数组赋值到新数组中
+        // 将num1,num2数值部分的数组赋值到新数组中
         System.arraycopy(num1.getValues(), 1, num1Values, 0, num1Values.length);
         System.arraycopy(num2.getValues(), 1, num2Values, 0, num2Values.length);
         Log.d("num1Values: ", num1Values);
