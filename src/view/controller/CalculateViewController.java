@@ -1,8 +1,7 @@
 package view.controller;
 
-import binary.BinaryNum;
-import binary.BinaryNumOperation;
-import binary.Operation;
+import binary.*;
+import binary.base.IBinaryNumOperation;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -28,24 +27,23 @@ public class CalculateViewController implements Initializable {
     @FXML
     private VBox contentPane;
 
-//    @FXML
-//    private Button mButton;
-    private BinaryNum mNum1;
-    private BinaryNum mNum2;
+    private String mNum1;
+    private String mNum2;
     private int operationWay;
     private boolean isTwoBit;//是不是二位计算
+    private boolean isDouble;//是否为浮点数
     private Operation mOperation;
+    private int bitLength;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 //        initButton();
-        mNum1 = new BinaryNum((String) AppDataUtils.get("num1"));
-        mNum2 = new BinaryNum((String) AppDataUtils.get("num2"));
-        int bitLength = (int) AppDataUtils.get("bitLength");
-        mNum1.transBinaryNumBitLength(bitLength);
-        mNum2.transBinaryNumBitLength(bitLength);
+        mNum1 =(String) AppDataUtils.get("num1");
+        mNum2 = (String) AppDataUtils.get("num2");
+        bitLength = (int) AppDataUtils.get("bitLength");
         operationWay = (int) AppDataUtils.get(Operation.TAG);
         isTwoBit = (boolean) AppDataUtils.get("isTwoBit");
+        isDouble = (boolean) AppDataUtils.get("isDouble");
         calculate();//计算
     }
 
@@ -66,21 +64,36 @@ public class CalculateViewController implements Initializable {
 //    }
 
     private void calculate(){
+        IBinaryNumOperation binaryNumOperation;
+        Object num1,num2;
+        if (isDouble){
+            binaryNumOperation = new DoubleBinaryNumOperation();
+            num1 = new DoubleBinaryNum(mNum1, bitLength);
+            num2 = new DoubleBinaryNum(mNum2, bitLength);
+        }else {
+            binaryNumOperation = new BinaryNumOperation();
+            BinaryNum temp1 = new BinaryNum(mNum1);
+            BinaryNum temp2  = new BinaryNum(mNum2);
+            temp1.transBinaryNumBitLength(bitLength);
+            temp2.transBinaryNumBitLength(bitLength);
+            num1 = temp1;
+            num2 = temp2;
+        }
         switch (operationWay){
             case Operation.OP_ADD:
-                mOperation = BinaryNumOperation.add(mNum1, mNum2, isTwoBit);
+                mOperation = binaryNumOperation.add(num1, num2, isTwoBit);
                 showAddCutProcess();
                 break;
             case Operation.OP_CUT:
-                mOperation = BinaryNumOperation.cut(mNum1, mNum2, isTwoBit);
+                mOperation = binaryNumOperation.cut(num1, num2, isTwoBit);
                 showAddCutProcess();
                 break;
             case Operation.OP_MUTIL:
-                mOperation = BinaryNumOperation.multi(mNum1, mNum2, isTwoBit);
+                mOperation = binaryNumOperation.multi(num1, num2, isTwoBit);
                 showMultiProcess();
                 break;
             default:
-                mOperation = BinaryNumOperation.add(mNum1, mNum2, isTwoBit);
+                mOperation = binaryNumOperation.add(num1, num2, isTwoBit);
         }
 
     }

@@ -160,7 +160,9 @@ public class BinaryNum {
      * @return
      */
     public BinaryNum createNewOne(){
-        return new BinaryNum(values);
+        int[] newValues = new int[values.length];
+        System.arraycopy(values, 0, newValues, 0, values.length);
+        return new BinaryNum(newValues);
     }
 
 

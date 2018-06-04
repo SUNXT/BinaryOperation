@@ -1,5 +1,6 @@
 package utils;
 
+import binary.DoubleBinaryNum;
 import com.sun.org.apache.regexp.internal.RE;
 
 import java.util.regex.Pattern;
@@ -98,6 +99,23 @@ public class NumberUtils {
             newText.append(v);
         }
         return newText.toString();
+    }
+
+    /**
+     * 转补码
+     * @param bitLength
+     * @param dText
+     * @param isDouble 是否带小数点
+     * @return
+     */
+    public static String transComplementNum(int bitLength, String dText, boolean isDouble){
+        if (!isDouble){
+            return transComplementNum(bitLength, dText);
+        }
+
+        DoubleBinaryNum temp = new DoubleBinaryNum(Double.valueOf(dText), bitLength);
+        temp.transComplementNum();
+        return temp.toString();
     }
 
     public static String transString(int[] values){

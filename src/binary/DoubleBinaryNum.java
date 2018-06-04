@@ -27,6 +27,12 @@ public class DoubleBinaryNum {
         updateValues();
     }
 
+    public DoubleBinaryNum(String text, int bitLength){
+        this.text = text;
+        this.bitLength = bitLength;
+        updateValues();
+    }
+
     /**
      * 更新数组，数组的第一位是符号位，第二位为整数位
      */
@@ -116,6 +122,12 @@ public class DoubleBinaryNum {
     @Override
     public String toString() {
         return text;
+    }
+
+    public DoubleBinaryNum createNewOne(){
+        int[] newValues = new int[values.length];
+        System.arraycopy(values, 0, newValues, 0, values.length);
+        return new DoubleBinaryNum(newValues, bitLength);
     }
 
     public static void main(String[] strings){

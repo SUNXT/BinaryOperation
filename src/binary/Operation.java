@@ -73,6 +73,37 @@ public class Operation<Process>{
 
 
     /**
+     * 兼容 DoubleBinaryNum
+     */
+    private DoubleBinaryNum mDNum1;
+    private DoubleBinaryNum mDNum2;
+    private DoubleBinaryNum mDResult;
+
+    public DoubleBinaryNum getDNum1() {
+        return mDNum1;
+    }
+
+    public void setDNum1(DoubleBinaryNum mDNum1) {
+        this.mDNum1 = mDNum1;
+    }
+
+    public DoubleBinaryNum getDNum2() {
+        return mDNum2;
+    }
+
+    public void setDNum2(DoubleBinaryNum mDNum2) {
+        this.mDNum2 = mDNum2;
+    }
+
+    public DoubleBinaryNum getDResult() {
+        return mDResult;
+    }
+
+    public void setDResult(DoubleBinaryNum mDResult) {
+        this.mDResult = mDResult;
+    }
+
+    /**
      * 乘法计算过程
      */
     public static class MultiProcess{

@@ -1,13 +1,14 @@
 package binary;
 
 import binary.base.BaseBinaryNumOperation;
+import binary.base.IBinaryNumOperation;
 import utils.Log;
 import utils.NumberUtils;
 
 import java.util.LinkedList;
 
 
-public class BinaryNumOperation extends BaseBinaryNumOperation{
+public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinaryNumOperation<BinaryNum> {
 
     public static void main(String[] args){
 
@@ -30,9 +31,10 @@ public class BinaryNumOperation extends BaseBinaryNumOperation{
 //        Log.d("num2", num2);
 //        Log.d("result", add(num1, num2));
 
+        IBinaryNumOperation operation = new BinaryNumOperation();
         BinaryNum num1 = new BinaryNum(-12);
         BinaryNum num2 = new BinaryNum(13);
-        division(num1, num2);
+        operation.division(num1, num2, true);
     }
 
 
@@ -44,7 +46,8 @@ public class BinaryNumOperation extends BaseBinaryNumOperation{
      * @param num2
      * @return
      */
-    public static Operation add(BinaryNum num1, BinaryNum num2, boolean isTwoBit){
+    @Override
+    public Operation add(BinaryNum num1, BinaryNum num2, boolean isTwoBit){
 
         if (isTwoBit){
             Log.d("二位加法");
@@ -189,7 +192,8 @@ public class BinaryNumOperation extends BaseBinaryNumOperation{
      * @param isTwoBit
      * @return
      */
-    public static Operation cut(BinaryNum num1, BinaryNum num2, boolean isTwoBit){
+    @Override
+    public Operation cut(BinaryNum num1, BinaryNum num2, boolean isTwoBit){
         Log.d("num1: " + num1.toString() + " 值：" + num1.getDecimalValue());
         Log.d("num2: " + num2.toString() + " 值：" + num2.getDecimalValue());
 
@@ -321,7 +325,8 @@ public class BinaryNumOperation extends BaseBinaryNumOperation{
      * @param num2
      * @return
      */
-    public static Operation<Operation.MultiProcess> multi(BinaryNum num1, BinaryNum num2, boolean isTwoBit){
+    @Override
+    public Operation<Operation.MultiProcess> multi(BinaryNum num1, BinaryNum num2, boolean isTwoBit){
         Operation<Operation.MultiProcess> operation = new Operation<>();
         operation.setNum1(num1);
         operation.setNum2(num2);
@@ -422,9 +427,11 @@ public class BinaryNumOperation extends BaseBinaryNumOperation{
      * 采用加减交替法
      * @param num1
      * @param num2
+     * @param isTwoBit
      * @return
      */
-    public static Operation division(BinaryNum num1, BinaryNum num2){
+    @Override
+    public Operation division(BinaryNum num1, BinaryNum num2, boolean isTwoBit){
         Operation operation = new Operation();
         operation.setNum1(num1.createNewOne());
         operation.setNum2(num2.createNewOne());
@@ -445,7 +452,6 @@ public class BinaryNumOperation extends BaseBinaryNumOperation{
         Log.d("num1(补)", num1Values);
         Log.d("num2(补)", num2Values);
         Log.d("-num2(补)", dNum2Values);
-
 
         return operation;
     }
