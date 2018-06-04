@@ -31,10 +31,12 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
 //        Log.d("num2", num2);
 //        Log.d("result", add(num1, num2));
 
-        IBinaryNumOperation operation = new BinaryNumOperation();
-        BinaryNum num1 = new BinaryNum(-12);
-        BinaryNum num2 = new BinaryNum(13);
-        operation.division(num1, num2, true);
+        BinaryNum num1 = new BinaryNum(8);
+        BinaryNum num2 = new BinaryNum(2);
+        num1.transBinaryNumBitLength(8);
+        num2.transBinaryNumBitLength(8);
+        BinaryNumOperation operation = new BinaryNumOperation();
+        operation.division(num1, num2, false);
     }
 
 
@@ -439,19 +441,64 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
         Log.d("num1(原)", num1.getValues());
         Log.d("num2(原)", num2.getValues());
 
+        int resultSign = num1.getValues()[0] ^ num2.getValues()[0];
+        Log.d("resultSign: "+ resultSign);
+
+        int bitLength = num1.getBitType();
+
+        //取num1,num2的绝对值
+        int num1DecimalValue = Math.abs(num1.getDecimalValue());
+        int num2DecimalValue = Math.abs(num2.getDecimalValue());
+        num1 = new BinaryNum(num1DecimalValue);
+        num2 = new BinaryNum(num2DecimalValue);
+
+        num1.transBinaryNumBitLength(bitLength);
+        num2.transBinaryNumBitLength(bitLength);
+
         //求出num1(补) num2(补) (-num2)(补)
         num1.transComplementNum();
         int[] num1Values = num1.getValues();
         BinaryNum dNum2 = new BinaryNum(-num2.getDecimalValue());
+        dNum2.transBinaryNumBitLength(bitLength);
         Log.d("-num2(原)", dNum2.getValues());
         dNum2.transComplementNum();
         int[] dNum2Values = dNum2.getValues();
         num2.transComplementNum();
         int[] num2Values = num2.getValues();
 
+        int[] remainderValues = new int[num1Values.length];//用于保存余数
+        //一开始的余数为被除数 num1(补)
+        System.arraycopy(num1Values, 0 , remainderValues, 0, remainderValues.length);
+
         Log.d("num1(补)", num1Values);
         Log.d("num2(补)", num2Values);
         Log.d("-num2(补)", dNum2Values);
+
+        int length = num1.getLength();//获取字节长，当商长度为bitLength的时候，结束计算
+        StringBuilder resultBuilder = new StringBuilder();//保存商，把每一位商拼接起来
+        for (int i = 0; i < length; i ++){
+            if (remainderValues[0] == 0){
+                // 余数大于0
+                // + [-num2](补)
+                dNum2Values = moveRight(dNum2Values, i, 1);
+                remainderValues = add(remainderValues, dNum2Values);
+            }else {
+                // 余数小于0
+                // + [num2](补)
+                num1Values = moveRight(num1Values, i, 0);
+                remainderValues = add(remainderValues, num2Values);
+            }
+
+            //将商的结果拼接上去，如果余数大于0，则商拼接1，否则拼接0
+            //即 当符号位为0的时候，该拼接1，否则拼接0
+            if (remainderValues[0] == 0){
+                resultBuilder.append(1);
+            }else {
+                resultBuilder.append(0);
+            }
+
+        }
+        Log.d(resultBuilder.toString());
 
         return operation;
     }

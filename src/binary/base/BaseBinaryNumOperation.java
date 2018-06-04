@@ -1,5 +1,8 @@
 package binary.base;
 
+import utils.Log;
+import utils.NumberUtils;
+
 public class BaseBinaryNumOperation {
 
     /**
@@ -26,6 +29,25 @@ public class BaseBinaryNumOperation {
         }
         return result;
     }
+
+    /**
+     * 两个整型数组相加，要求数组必须长度一样长，相加得到的数组，去掉最高位溢出的数
+     * @param num1
+     * @param num2
+     * @return
+     */
+    protected static int[] addNotOverFlow(int[] num1, int[] num2){
+        if (num1.length != num2.length){
+            Log.d("num1 和 num2的长度不一致");
+            return null;
+        }
+
+        int[] temp = add(num1, num2);
+        int[] result = new int[temp.length - 1];
+        System.arraycopy(temp, 1, result, 0, result.length);
+        return result;
+    }
+
 
     /**
      *
@@ -78,16 +100,16 @@ public class BaseBinaryNumOperation {
      * 拓展数组，前面补零
      * @param src
      * @param zerLength
-     * @param saveFirstValues 保留第一位然后进行拓展，如果是true，则保留，效果为 1101 拓展3个零 -》1 000 101 如果为false 则不保留 效果为 1101 拓展3个零 -》000 1101
+     * @param saveFirstValue 保留第一位然后进行拓展，如果是true，则保留，效果为 1101 拓展3个零 -》1 000 101 如果为false 则不保留 效果为 1101 拓展3个零 -》000 1101
      * @return
      */
-    protected static int[] fillZeroPre(int[] src, int zerLength, boolean saveFirstValues){
+    protected static int[] fillZeroPre(int[] src, int zerLength, boolean saveFirstValue){
         if (zerLength == 0){
             return src;
         }
 
         int[] result = new int[src.length + zerLength];
-        if (saveFirstValues){
+        if (saveFirstValue){
             result[0] = src[0];
             System.arraycopy(src, 1, result, zerLength + 1, src.length - 1);
         }else {
@@ -95,4 +117,75 @@ public class BaseBinaryNumOperation {
         }
         return result;
     }
+
+    /**
+     * 向前补1
+     * @param src
+     * @param oneLength
+     * @param saveFirstValue 是否保留第一个值，和补0一样的道理
+     * @return
+     */
+    protected static int[] fillOnePre(int[] src, int oneLength, boolean saveFirstValue){
+        if (oneLength == 0){
+            return src;
+        }
+
+        Log.d("src", src);
+        int[] result = fillZeroPre(src, oneLength, saveFirstValue);//先填充0，然后再将填充的0赋值为1
+        for (int i = 1; i <= oneLength; ++i){
+            result[i] = 1;
+        }
+        Log.d("result", result);
+        return result;
+    }
+
+    /**
+     * 数组右移
+     * 假设 src：0110 move：2 fillValue：1 ———》return 1101
+     * @param src 原数组
+     * @param move 移动的位数
+     * @param fillValue 左边填充的数值
+     * @return 输出数组
+     */
+    protected static int[] moveRight(int[] src, int move, int fillValue){
+        if (move < 1){
+            return src;
+        }
+        int[] result = new int[src.length];
+        System.arraycopy(src, 0, result, move, src.length - move);
+        for (int i = 0; i < move; i ++){
+            result[i] = fillValue;
+        }
+        Log.d("moveRight, src：" + NumberUtils.transString(src) + " move：" + move + " fillValue：" + fillValue + " result：" + NumberUtils.transString(result));
+        return result;
+    }
+
+    /**
+     * 数组座移
+     * @param src
+     * @param move
+     * @param fillValue
+     * @return
+     */
+    protected static int[] moveLeft(int[] src, int move, int fillValue){
+        if (move < 1){
+            return src;
+        }
+        int[] result = new int[src.length];
+        System.arraycopy(src, move, result, 0, src.length - move);
+        for (int i = src.length - move; i < src.length; i ++){
+            result[i] = fillValue;
+        }
+        Log.d("moveLeft, src：" + NumberUtils.transString(src) + " move：" + move + " fillValue：" + fillValue + " result：" + NumberUtils.transString(result));
+        return result;
+    }
+
+
+    public static void main(String[] args){
+        int[] num = {1,0,1,0,1,1};
+        moveRight(num, 2, 0);
+        moveLeft(num, 2, 1);
+        moveLeft(num, 3, 0);
+    }
+
 }

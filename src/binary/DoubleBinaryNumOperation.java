@@ -204,6 +204,8 @@ public class DoubleBinaryNumOperation extends BaseBinaryNumOperation implements 
         System.arraycopy(num2.getValues(), 1, num2Values, 0, num2Values.length);
         Log.d("num1Values: ", num1Values);
         Log.d("num2Values: ", num2Values);
+
+        // TODO: 2018/6/5 还需要处理，具体和整数相识
         return operation;
     }
 
