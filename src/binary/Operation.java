@@ -157,4 +157,43 @@ public class Operation<Process>{
         }
     }
 
+    /**
+     * 除法计算过程
+     */
+    public static class DivisionProcess{
+
+        private SimpleStringProperty process = new SimpleStringProperty();//具体的计算过程
+        private SimpleStringProperty explanation = new SimpleStringProperty();//说明
+
+        public String getProcess() {
+            return process.get();
+        }
+
+        public SimpleStringProperty processProperty() {
+            return process;
+        }
+
+        public void setProcess(String process) {
+            this.process.set(process);
+        }
+
+        public String getExplanation() {
+            return explanation.get();
+        }
+
+        public SimpleStringProperty explanationProperty() {
+            return explanation;
+        }
+
+        public void setExplanation(String explanation) {
+            this.explanation.set(explanation);
+        }
+
+        @Override
+        public String toString() {
+            return "DivisionProcess：\n" +process.get() +
+                    "\nexplanation=" + explanation.get();
+        }
+    }
+
 }

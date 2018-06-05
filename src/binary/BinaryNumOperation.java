@@ -31,10 +31,16 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
 //        Log.d("num2", num2);
 //        Log.d("result", add(num1, num2));
 
-        BinaryNum num1 = new BinaryNum(8);
+//        BinaryNum num1 = new BinaryNum("0101001");
+//        BinaryNum num2 = new BinaryNum("0111000");
+//        BinaryNum num = new BinaryNum(2);
+//        Log.d(num.toString());
+//        num = new BinaryNum(-2);
+//        num.transComplementNum();
+//        Log.d(num.toString());
+        BinaryNum num1 = new BinaryNum(16);
         BinaryNum num2 = new BinaryNum(2);
         num1.transBinaryNumBitLength(8);
-        num2.transBinaryNumBitLength(8);
         BinaryNumOperation operation = new BinaryNumOperation();
         operation.division(num1, num2, false);
     }
@@ -434,32 +440,34 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
      */
     @Override
     public Operation division(BinaryNum num1, BinaryNum num2, boolean isTwoBit){
+
+        int resultSign = num1.getValues()[0] ^ num2.getValues()[0];
+        Log.d("resultSign: "+ resultSign);
+
         Operation operation = new Operation();
+        StringBuilder explanation = new StringBuilder();
+        explanation.append("使用加减交替法进行除法运算\n将num1 和 num2 的符号位进行异或得到计算结果符号，取绝对值进行除法运算" + "\nnum1的符号位为：").append(num1.getValues()[0]).append("，num2的符号位为：").append(num2.getValues()[0]).append(" 异或结果为：").append(resultSign).append("\n");
         operation.setNum1(num1.createNewOne());
         operation.setNum2(num2.createNewOne());
 
         Log.d("num1(原)", num1.getValues());
         Log.d("num2(原)", num2.getValues());
 
-        int resultSign = num1.getValues()[0] ^ num2.getValues()[0];
-        Log.d("resultSign: "+ resultSign);
-
-        int bitLength = num1.getBitType();
+        int bitLength = num1.getBitType();//为了保持num1的位数不变
 
         //取num1,num2的绝对值
         int num1DecimalValue = Math.abs(num1.getDecimalValue());
         int num2DecimalValue = Math.abs(num2.getDecimalValue());
         num1 = new BinaryNum(num1DecimalValue);
         num2 = new BinaryNum(num2DecimalValue);
-
-        num1.transBinaryNumBitLength(bitLength);
-        num2.transBinaryNumBitLength(bitLength);
+        num1.transBinaryNumBitLength(bitLength);//num1需要保持原来的字节长
+        //num2不需要必须使用原来的子长，将字节长变为和num1相同，不然计算结果会有误
+        explanation.append("对num1和num2取绝对值，得到").append("num1 = ").append(num1.toString()).append(" num2 = ").append(num2.toString()).append("\n");
 
         //求出num1(补) num2(补) (-num2)(补)
         num1.transComplementNum();
         int[] num1Values = num1.getValues();
         BinaryNum dNum2 = new BinaryNum(-num2.getDecimalValue());
-        dNum2.transBinaryNumBitLength(bitLength);
         Log.d("-num2(原)", dNum2.getValues());
         dNum2.transComplementNum();
         int[] dNum2Values = dNum2.getValues();
@@ -474,33 +482,80 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
         Log.d("num2(补)", num2Values);
         Log.d("-num2(补)", dNum2Values);
 
-        int length = num1.getLength();//获取字节长，当商长度为bitLength的时候，结束计算
+        explanation.append("num1(补) = ").append(NumberUtils.transString(num1Values)).append(" num2(补) = ").append(NumberUtils.transString(num2Values)).append(" -num2(补) = ").append(NumberUtils.transString(dNum2Values)).append("\n");
+        operation.setCalculateExplanation(explanation.toString());
+        Log.println();
+
+        LinkedList<Operation.DivisionProcess> processes = new LinkedList<>();
+        int count = num1Values.length - num2Values.length + 1;//需要计算的次数
         StringBuilder resultBuilder = new StringBuilder();//保存商，把每一位商拼接起来
-        for (int i = 0; i < length; i ++){
+        Operation.DivisionProcess divisionProcess;//记录除法过程
+        String p1,p2;//p1记录divisionProcess中的process，p2记录divisionProcess中的explanation
+        for (int i = 0; i < count; i ++){
+            //下面，为什么是[-num2](补)需要向前填充1呢？因为 [-num2](补)一定是负号的，即第一位一定是1，根据书里的加减交替法，必须填充1实现右移动，同理，[num2](补)数组的第一位一定是0，所以要填充0
+            //为什么说是“一定 dNum2Values[0] = 1, num2Values[0] = 0”因为上面已经对两个数进行了取绝对值的处理，所以，处理后的 num2 一定是正数，-num2一定是负数
+            divisionProcess = new Operation.DivisionProcess();
+            Log.d("remainderValues", remainderValues);
+            p1 = "\t" + NumberUtils.transString(remainderValues) + "\n";
             if (remainderValues[0] == 0){
                 // 余数大于0
                 // + [-num2](补)
-                int[] tempDNum2Values = moveRight(dNum2Values, i, 1);
-                remainderValues = add(remainderValues, tempDNum2Values);
+                int[] tempDNum2Values = fillOnePre(dNum2Values, i, false);//先向前填充1
+                tempDNum2Values = fillZeroBehind(tempDNum2Values, remainderValues.length - tempDNum2Values.length);//再向后面填充0，使其与余数的长度相同，方便两个数组相加，这样才不会出错
+                Log.d("tempDNum2Values", tempDNum2Values);
+                p1 += "+\t" + NumberUtils.transString(tempDNum2Values) + " [-num2](补)\n";
+                p1 += createCutLine(tempDNum2Values.length + 30) + "\n";
+                remainderValues = addNotOverFlow(remainderValues, tempDNum2Values);
+                p1 += "\t" + NumberUtils.transString(remainderValues);
+                Log.d("new RemainderValues", remainderValues);
+                Log.println();
             }else {
                 // 余数小于0
                 // + [num2](补)
-                int[] tempNum2Value = moveRight(num2Values, i, 0);
-                remainderValues = add(remainderValues, tempNum2Value);
+                int[] tempNum2Values = fillZeroPre(num2Values, i, false);
+                tempNum2Values = fillZeroBehind(tempNum2Values, remainderValues.length - tempNum2Values.length);//道理和上面的相同
+                p1 += "+\t" + NumberUtils.transString(tempNum2Values) + " [num2](补)\n";
+                p1 += createCutLine(tempNum2Values.length + 20) + "\n";
+                Log.d("tempNum2Values", tempNum2Values);
+                remainderValues = addNotOverFlow(remainderValues, tempNum2Values);
+                p1 += "\t" + NumberUtils.transString(remainderValues);
+                Log.d("new RemainderValues", remainderValues);
+                Log.println();
             }
 
             //将商的结果拼接上去，如果余数大于0，则商拼接1，否则拼接0
             //即 当符号位为0的时候，该拼接1，否则拼接0
+            p2 = "余数：" + NumberUtils.transString(remainderValues);
             if (remainderValues[0] == 0){
                 resultBuilder.append(1);
+                p2 += " 为正数，所以商拼接1，下次计算需要加上 [-num2](补)";
             }else {
                 resultBuilder.append(0);
+                p2 += " 为负数，所以商拼接0，下次计算需要加上 [num2](补)";
             }
-
+            divisionProcess.setProcess(p1);
+            divisionProcess.setExplanation(p2);
+            processes.add(divisionProcess);
         }
         Log.d(resultBuilder.toString());
+        BinaryNum result = new BinaryNum(resultSign + resultBuilder.toString());
+        operation.setResult(result);
+        operation.setCalculateProcess(processes);
+        Log.d("result " + result.toString());
+        Log.d("结果：(" + operation.getNum1().getDecimalValue() + ") / (" + operation.getNum2().getDecimalValue() + ") = " + result.getDecimalValue());
 
+        for (Operation.DivisionProcess divisionProcess1: processes){
+            Log.d(divisionProcess1.toString());
+        }
         return operation;
+    }
+
+    private String createCutLine(int length){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length; ++ i){
+            stringBuilder.append("-");
+        }
+        return stringBuilder.toString();
     }
 
 }

@@ -158,7 +158,7 @@ public class MainViewController implements Initializable {
         mBtnAdd.setOnMouseClicked(event -> calculate(Operation.OP_ADD));
         mBtnCut.setOnMouseClicked(event -> calculate(Operation.OP_CUT));
         mBtnMulti.setOnMouseClicked(event -> calculate(Operation.OP_MUTIL));
-//        mBtnDivision.setOnMouseClicked(event -> calculate(Operation.OP_DIVISION));
+        mBtnDivision.setOnMouseClicked(event -> calculate(Operation.OP_DIVISION));
     }
 
     private void calculate(int calculateType){

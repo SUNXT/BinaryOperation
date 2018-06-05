@@ -130,12 +130,15 @@ public class BaseBinaryNumOperation {
             return src;
         }
 
-        Log.d("src", src);
+//        Log.d("src", src);
         int[] result = fillZeroPre(src, oneLength, saveFirstValue);//先填充0，然后再将填充的0赋值为1
         for (int i = 1; i <= oneLength; ++i){
             result[i] = 1;
         }
-        Log.d("result", result);
+        if (!saveFirstValue){
+            result[0] = 1;
+        }
+//        Log.d("result", result);
         return result;
     }
 

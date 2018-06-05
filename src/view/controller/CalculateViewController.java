@@ -84,16 +84,24 @@ public class CalculateViewController implements Initializable {
                 mOperation = binaryNumOperation.add(num1, num2, isTwoBit);
                 showAddCutProcess();
                 break;
+
             case Operation.OP_CUT:
                 mOperation = binaryNumOperation.cut(num1, num2, isTwoBit);
                 showAddCutProcess();
                 break;
+
             case Operation.OP_MUTIL:
                 mOperation = binaryNumOperation.multi(num1, num2, isTwoBit);
                 showMultiProcess();
                 break;
+
+             case Operation.OP_DIVISION:
+                 mOperation = binaryNumOperation.division(num1, num2, isTwoBit);
+                 showDivisionProcess();
+                 break;
             default:
                 mOperation = binaryNumOperation.add(num1, num2, isTwoBit);
+                showAddCutProcess();
         }
 
     }
@@ -134,6 +142,30 @@ public class CalculateViewController implements Initializable {
         Label label2 = new Label();
         label2.setText("计算结果 result = " + mOperation.getResult().getDecimalValue() + " 二进制表示为：" + NumberUtils.transString(mOperation.getResult().getValues()));
         contentPane.getChildren().addAll(label, label1, tableView, label2);
+    }
+
+    private void showDivisionProcess(){
+        LinkedList<Operation.DivisionProcess> divisionProcesses = mOperation.getCalculateProcess();
+        //用表格显示
+        TableView<Operation.DivisionProcess> tableView = new TableView<>();
+        tableView.setItems(FXCollections.observableArrayList(divisionProcesses));
+        TableColumn processC = new TableColumn("计算过程");
+        TableColumn explanationC = new TableColumn("说明");
+        processC.setMinWidth(400);
+        processC.setCellValueFactory(new PropertyValueFactory<>("process"));
+        explanationC.setMinWidth(600);
+        explanationC.setCellValueFactory(new PropertyValueFactory<>("explanation"));
+        tableView.getColumns().addAll(processC, explanationC);
+        contentPane.setPrefWidth(1000);
+
+        Label label = new Label();
+        label.setText(mOperation.getCalculateExplanation());
+        Label label2 = new Label();
+        int remainder = mOperation.getNum1().getDecimalValue() - mOperation.getResult().getDecimalValue() * mOperation.getNum2().getDecimalValue();
+        label2.setText("计算结果的二进制表示：" + mOperation.getResult().toString() + " \n" + mOperation.getNum1().getDecimalValue() + ") / (" + mOperation.getNum2().getDecimalValue() + ") = " + mOperation.getResult().getDecimalValue() + " 余数：" + remainder);
+
+        contentPane.getChildren().addAll(label, tableView, label2);
+
     }
 
 }
