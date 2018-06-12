@@ -100,7 +100,8 @@ public class BaseBinaryNumOperation {
      * 拓展数组，前面补零
      * @param src
      * @param zerLength
-     * @param saveFirstValue 保留第一位然后进行拓展，如果是true，则保留，效果为 1101 拓展3个零 -》1 000 101 如果为false 则不保留 效果为 1101 拓展3个零 -》000 1101
+     * @param saveFirstValue 保留第一位然后进行拓展，如果是true，则保留，效果为 1101 拓展3个零 -》1 000 101
+     *                       如果为false 则不保留 效果为 1101 拓展3个零 -》000 1101
      * @return
      */
     protected static int[] fillZeroPre(int[] src, int zerLength, boolean saveFirstValue){

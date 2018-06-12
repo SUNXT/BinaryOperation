@@ -162,6 +162,10 @@ public class MainViewController implements Initializable {
     }
 
     private void calculate(int calculateType){
+        if (calculateType == Operation.OP_DIVISION && "0".equals(mEditNum2.getText())){
+            showDialog("提示", "被除数不能为0！");
+            return;
+        }
         try {
             AppDataUtils.put("num1", mNum1);
             AppDataUtils.put("num2", mNum2);

@@ -42,7 +42,7 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
         BinaryNum num2 = new BinaryNum(2);
         num1.transBinaryNumBitLength(8);
         BinaryNumOperation operation = new BinaryNumOperation();
-        operation.division(num1, num2, false);
+        operation.multi(num1, num2, false);
     }
 
 
@@ -420,11 +420,21 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
             }
         }
 
-        operation.setCalculateProcess(processes);
         BinaryNum result = new BinaryNum(resultSign + NumberUtils.transString(tempValues));
         operation.setResult(result);
         Log.d(num1.getDecimalValue() + " * " + num2.getDecimalValue() + " = " + result.getDecimalValue());
 
+
+        multiProcess = new Operation.MultiProcess();
+        multiProcess.setProcess("计算结果：" + result.toString());
+        multiProcess.setExplanation("需要拼接上符号位！");
+        processes.add(multiProcess);
+
+        multiProcess = new Operation.MultiProcess();
+        multiProcess.setProcess(num1.getDecimalValue() + " * " + num2.getDecimalValue() + " = " + result.getDecimalValue());
+        processes.add(multiProcess);
+
+        operation.setCalculateProcess(processes);
         for (Operation.MultiProcess process: processes){
             Log.d(process.toString());
         }
@@ -546,9 +556,14 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
         Log.d("result " + result.toString());
         Log.d("结果：(" + operation.getNum1().getDecimalValue() + ") / (" + operation.getNum2().getDecimalValue() + ") = " + result.getDecimalValue());
 
-        for (Operation.DivisionProcess divisionProcess1: processes){
-            Log.d(divisionProcess1.toString());
-        }
+        Operation.DivisionProcess divisionProcess1 = new Operation.DivisionProcess();
+        divisionProcess1.setProcess("计算结果：" + result.toString());
+        processes.add(divisionProcess1);
+
+        divisionProcess1 = new Operation.DivisionProcess();
+        divisionProcess1.setProcess(operation.getNum1().getDecimalValue() + " / " + operation.getNum2().getDecimalValue() + " = " + operation.getResult().getDecimalValue());
+        processes.add(divisionProcess1);
+
         return operation;
     }
 

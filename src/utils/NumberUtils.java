@@ -118,6 +118,35 @@ public class NumberUtils {
         return temp.toString();
     }
 
+    /**
+     * 转补码
+     * @param values
+     * @return
+     */
+    public static int[] transComplementNum(int[] values){
+        //原码为正数，补码和原码一样
+        if (values[0] == 0){
+            return values;
+        }
+
+        //为负数，需要转换，从右往左扫描，遇到第一位1后的字节，进行反码处理
+        String text = NumberUtils.transString(values);
+        int rightOneIndex = text.lastIndexOf("1");//找从右边数过来第一个1 的位置
+        int[] result = new int[text.length()];
+        System.arraycopy(values, 0, result, 0, result.length);
+        Log.d("the right one index is " + rightOneIndex);
+        int i = rightOneIndex - 1;
+        while (i > 0){
+            if (values[i] == 0){
+                result[i] = 1;
+            }else {
+                result[i] = 0;
+            }
+            i --;
+        }
+        return result;
+    }
+
     public static String transString(int[] values){
         StringBuilder newText = new StringBuilder();
         for (int i : values){
@@ -141,6 +170,15 @@ public class NumberUtils {
             builder.append(0);
         }
         return builder.toString();
+    }
+
+    /**
+     * 创造一个0数组
+     * @param length
+     * @return
+     */
+    public static int[] createZeroArray(int length){
+        return new int[length];
     }
 
     /**
@@ -180,6 +218,37 @@ public class NumberUtils {
         }
 
         return builder.toString();
+    }
+
+    /**
+     * 移除前面的0，当遇到第一个1的时候停止移除
+     * @param src
+     * @return
+     */
+    public static int[] removePreZero(int[] src){
+        String temp = NumberUtils.transString(src);
+        int firstOneIndex = temp.indexOf("1");
+        temp = temp.substring(firstOneIndex, temp.length());
+        return transValues(temp);
+    }
+
+
+    /**
+     * 将不含浮点数的二进制数字符串转为数组
+     * @param text
+     * @return
+     */
+    public static int[] transValues(String text){
+        int[] values;
+        if (text != null && text.length() > 0){
+            values = new int[text.length()];
+            for (int i = 0; i < values.length; ++ i ){
+                values[i] = text.charAt(i)-48;
+            }
+            return values;
+        }else {
+            return null;
+        }
     }
 
 }

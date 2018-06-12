@@ -3,6 +3,8 @@ package view.controller;
 import binary.*;
 import binary.base.IBinaryNumOperation;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -106,6 +108,9 @@ public class CalculateViewController implements Initializable {
 
     }
 
+    /**
+     * 显示加减法计算过程
+     */
     private void showAddCutProcess(){
         LinkedList<String> mCalculateProcess = mOperation.getCalculateProcess();
         while (mCalculateProcess.size() > 0){
@@ -118,11 +123,16 @@ public class CalculateViewController implements Initializable {
         }
     }
 
+    /**
+     * 显示乘法计算过程
+     */
     private void showMultiProcess(){
         LinkedList<Operation.MultiProcess> multiProcesses = mOperation.getCalculateProcess();
         //用表格显示
         TableView<Operation.MultiProcess> tableView = new TableView<>();
-        tableView.setItems(FXCollections.observableArrayList(multiProcesses));
+        ObservableList<Operation.MultiProcess> showProcesses = FXCollections.observableArrayList();
+        tableView.setItems(showProcesses);
+        tableView.setPrefHeight(100*multiProcesses.size());
         TableColumn processC = new TableColumn("计算过程");
 //        TableColumn beAddNumC = new TableColumn("被加数");
         TableColumn explanationC = new TableColumn("说明");
@@ -132,21 +142,31 @@ public class CalculateViewController implements Initializable {
         explanationC.setCellValueFactory(new PropertyValueFactory<>("explanation"));
         tableView.getColumns().addAll(processC, explanationC);
         contentPane.setPrefWidth(1000);
+        Button add = new Button("下一步");
+        add.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (multiProcesses.size() > 0){
+                    showProcesses.add(multiProcesses.poll());
+                }else {
+                    add.setDisable(true);
+                }
+            }
+        });
+        contentPane.getChildren().addAll(add,tableView);
 
-        Label label = new Label();
-        label.setText("Num1：" + mOperation.getNum1().getDecimalValue() + " 二进制表示为：" + NumberUtils.transString(mOperation.getNum1().getValues()));
-        Label label1 = new Label();
-        label1.setText("Num2：" + mOperation.getNum2().getDecimalValue() + " 二进制表示为：" + NumberUtils.transString(mOperation.getNum2().getValues()));
-        Label label2 = new Label();
-        label2.setText("计算结果 result = " + mOperation.getResult().getDecimalValue() + " 二进制表示为：" + NumberUtils.transString(mOperation.getResult().getValues()));
-        contentPane.getChildren().addAll(label, label1, tableView, label2);
     }
 
+    /**
+     * 显示除法计算过程
+     */
     private void showDivisionProcess(){
         LinkedList<Operation.DivisionProcess> divisionProcesses = mOperation.getCalculateProcess();
         //用表格显示
         TableView<Operation.DivisionProcess> tableView = new TableView<>();
-        tableView.setItems(FXCollections.observableArrayList(divisionProcesses));
+        ObservableList<Operation.DivisionProcess> showProcesses = FXCollections.observableArrayList();
+
+        tableView.setItems(showProcesses);
         TableColumn processC = new TableColumn("计算过程");
         TableColumn explanationC = new TableColumn("说明");
         processC.setMinWidth(400);
@@ -158,11 +178,19 @@ public class CalculateViewController implements Initializable {
 
         Label label = new Label();
         label.setText(mOperation.getCalculateExplanation());
-        Label label2 = new Label();
-        int remainder = mOperation.getNum1().getDecimalValue() - mOperation.getResult().getDecimalValue() * mOperation.getNum2().getDecimalValue();
-        label2.setText("计算结果的二进制表示：" + mOperation.getResult().toString() + " \n" + mOperation.getNum1().getDecimalValue() + ") / (" + mOperation.getNum2().getDecimalValue() + ") = " + mOperation.getResult().getDecimalValue() + " 余数：" + remainder);
 
-        contentPane.getChildren().addAll(label, tableView, label2);
+        Button add = new Button("下一步");
+        add.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (divisionProcesses.size() > 0){
+                    showProcesses.add(divisionProcesses.poll());
+                }else {
+                    add.setDisable(true);
+                }
+            }
+        });
+        contentPane.getChildren().addAll(label, add , tableView);
 
     }
 
