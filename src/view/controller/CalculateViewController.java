@@ -123,16 +123,14 @@ public class CalculateViewController implements Initializable {
         //用表格显示
         TableView<Operation.MultiProcess> tableView = new TableView<>();
         tableView.setItems(FXCollections.observableArrayList(multiProcesses));
-        TableColumn partResultC = new TableColumn("部分积");
-        TableColumn beAddNumC = new TableColumn("被加数");
+        TableColumn processC = new TableColumn("计算过程");
+//        TableColumn beAddNumC = new TableColumn("被加数");
         TableColumn explanationC = new TableColumn("说明");
-        partResultC.setMinWidth(200);
-        partResultC.setCellValueFactory(new PropertyValueFactory<>("partResult"));
-        beAddNumC.setMinWidth(200);
-        beAddNumC.setCellValueFactory(new PropertyValueFactory<>("beAddNum"));
+        processC.setMinWidth(400);
+        processC.setCellValueFactory(new PropertyValueFactory<>("process"));
         explanationC.setMinWidth(600);
         explanationC.setCellValueFactory(new PropertyValueFactory<>("explanation"));
-        tableView.getColumns().addAll(partResultC, beAddNumC, explanationC);
+        tableView.getColumns().addAll(processC, explanationC);
         contentPane.setPrefWidth(1000);
 
         Label label = new Label();

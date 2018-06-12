@@ -110,6 +110,7 @@ public class Operation<Process>{
         private SimpleStringProperty explanation = new SimpleStringProperty();//乘法过程的说明
         private SimpleStringProperty partResult = new SimpleStringProperty();//部分积
         private SimpleStringProperty beAddNum = new SimpleStringProperty();//被加数
+        private SimpleStringProperty process = new SimpleStringProperty();//计算过程
 
         public String getExplanation() {
             return explanation.get();
@@ -147,12 +148,25 @@ public class Operation<Process>{
             this.beAddNum.set(beAddNum);
         }
 
+        public String getProcess() {
+            return process.get();
+        }
+
+        public SimpleStringProperty processProperty() {
+            return process;
+        }
+
+        public void setProcess(String process) {
+            this.process.set(process);
+        }
+
         @Override
         public String toString() {
             return "MultiProcess{" +
                     "explanation=" + explanation +
                     ", partResult=" + partResult +
                     ", beAddNum=" + beAddNum +
+                    ", process=" + process +
                     '}';
         }
     }

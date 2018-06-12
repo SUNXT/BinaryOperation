@@ -183,6 +183,14 @@ public class BaseBinaryNumOperation {
         return result;
     }
 
+    protected String createCutLine(int length){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length; ++ i){
+            stringBuilder.append("-");
+        }
+        return stringBuilder.toString();
+    }
+
 
     public static void main(String[] args){
         int[] num = {1,0,1,0,1,1};

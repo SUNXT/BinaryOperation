@@ -373,7 +373,7 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
                 switch (num2Values[i-1] + "" + num2Values[i]){
                     case "00":
                         Log.d("00");
-                        multiProcess.setBeAddNum("0");
+                        multiProcess.setBeAddNum(NumberUtils.createZero(tempValues.length + 1));
                         break;
                     case "01":
                         Log.d("01");
@@ -396,6 +396,7 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
                 }
                 explanation = "num2第" + (j+1) + " " + (j + 2) + "位值为 " + num2Values[i-1] + "" + num2Values[i] + ", 此时的被加数为 " + multiProcess.getBeAddNum() + ", 部分积为" + multiProcess.getPartResult() + ", 计算完的部分积为" + NumberUtils.transString(tempValues);
                 multiProcess.setExplanation(explanation);
+                multiProcess.setProcess("\t" + multiProcess.getPartResult() + "(部分积)\n" + "+\t" + multiProcess.getBeAddNum() + "(被加数)\n" + createCutLine(multiProcess.getBeAddNum().length() + 30) + "\n\t" + NumberUtils.transString(tempValues));
                 processes.add(multiProcess);
             }
             Log.d("result", tempValues);
@@ -410,10 +411,11 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
                     Log.d("tempValues", tempValues);
                     multiProcess.setBeAddNum(NumberUtils.transString(beAddNum));
                 }else {
-                    multiProcess.setBeAddNum("0");
+                    multiProcess.setBeAddNum(NumberUtils.createZero(tempValues.length + 1));
                 }
                 String explanation = "num2第" + (j+1) + "位为" + num2Values[i] +", 此时被加数为" + multiProcess.getBeAddNum()+ ", 部分积为" + multiProcess.getPartResult() + ", 计算完部分积为 " + NumberUtils.transString(tempValues);
                 multiProcess.setExplanation(explanation);
+                multiProcess.setProcess("\t" + multiProcess.getPartResult() + "(部分积)\n" + "+\t" + multiProcess.getBeAddNum() + "(被加数)\n" + createCutLine(multiProcess.getBeAddNum().length() + 30) + "\n\t" + NumberUtils.transString(tempValues));
                 processes.add(multiProcess);
             }
         }
@@ -550,12 +552,5 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
         return operation;
     }
 
-    private String createCutLine(int length){
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < length; ++ i){
-            stringBuilder.append("-");
-        }
-        return stringBuilder.toString();
-    }
 
 }
