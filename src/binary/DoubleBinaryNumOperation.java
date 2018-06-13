@@ -348,7 +348,7 @@ public class DoubleBinaryNumOperation extends BaseBinaryNumOperation implements 
         System.arraycopy(num1.getValues(), 2, num1Values, 1, num1Values.length - 1);
         System.arraycopy(num2.getValues(), 2, num2Values, 1, num2Values.length - 1);
 
-        int bitLength = num1.getBitLength();//记录做完除法之后商的小数点位数
+        int bitLength = num1.getBitLength() / 2;//记录做完除法之后商的小数点位数，要求少一半
         //消去前面的0
         Log.d("num1Values", num1Values);
         Log.d("num2Values", num2Values);
@@ -449,12 +449,13 @@ public class DoubleBinaryNumOperation extends BaseBinaryNumOperation implements 
         DoubleBinaryNum resultDoubleNum = new DoubleBinaryNum(resultStr, bitLength);
 
         Operation.DivisionProcess divisionProcess1 = new Operation.DivisionProcess();
-        divisionProcess1.setProcess("计算结果：" + resultDoubleNum.toString());
+        divisionProcess1.setProcess("计算结果：" + resultDoubleNum.toString() + " 余数：" + NumberUtils.transString(remainderValues));
         divisionProcess1.setExplanation("该计算结果需要拼接上符号位和小数点，然后取小数点后" + bitLength + "位");
         processes.add(divisionProcess1);
 
         divisionProcess1 = new Operation.DivisionProcess();
-        divisionProcess1.setProcess(operation.getDNum1().getDoubleValue() + " / " + operation.getDNum2().getDoubleValue() + " = " + resultDoubleNum.getDoubleValue());
+        double r = operation.getDNum1().getDoubleValue() - operation.getDNum2().getDoubleValue() * resultDoubleNum.getDoubleValue();//余数
+        divisionProcess1.setProcess(operation.getDNum1().getDoubleValue() + " / " + operation.getDNum2().getDoubleValue() + " = " + resultDoubleNum.getDoubleValue() + " 余数：" + r);
         processes.add(divisionProcess1);
 
 

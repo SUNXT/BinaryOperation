@@ -90,22 +90,30 @@ public class MainViewController implements Initializable {
         mEditNum1.setText("0");
         mEditNum1.textProperty().addListener((observable, oldValue, newValue) -> {
 
-            String transBinNum = inputFilter(mEditNum1, newValue);
-            if (!"00".equals(transBinNum)){
-                mNum1 = transBinNum;
+            if (inputFilter(mEditNum1, newValue, oldValue)){
+                if (mIsDouble){
+                    mNum1 = NumberUtils.decimal2DoubleBinary(Double.valueOf(mEditNum1.getText()), mBitLength);
+                }else {
+                    mNum1 = NumberUtils.transBinNum(mBitLength, mEditNum1.getText());
+                }
+
                 mLabelCNum1.setText(mNum1);
-                mLabelONum1.setText(NumberUtils.transComplementNum(mBitLength, newValue, mIsDouble));
+                mLabelONum1.setText(NumberUtils.transComplementNum(mBitLength, mEditNum1.getText(), mIsDouble));
             }
 
         });
 
         mEditNum2.setText("0");
         mEditNum2.textProperty().addListener((observable, oldValue, newValue) -> {
-            String transBinNum = inputFilter(mEditNum2, newValue);
-            if (!"00".equals(transBinNum)){
-                mNum2 = transBinNum;
+            if (inputFilter(mEditNum2, newValue, oldValue)){
+                if (mIsDouble){
+                    mNum2 = NumberUtils.decimal2DoubleBinary(Double.valueOf(mEditNum2.getText()), mBitLength);
+                }else {
+                    mNum2 = NumberUtils.transBinNum(mBitLength, mEditNum2.getText());
+                }
+
                 mLabelCNum2.setText(mNum2);
-                mLabelONum2.setText(NumberUtils.transComplementNum(mBitLength, newValue, mIsDouble));
+                mLabelONum2.setText(NumberUtils.transComplementNum(mBitLength, mEditNum2.getText(), mIsDouble));
             }
 
         });
@@ -115,41 +123,57 @@ public class MainViewController implements Initializable {
      * 对输入框的过滤
      * @param textField 对应的输入框控件
      * @param newValue 输入中的新值
-     * @return 处理之后的二进制原码
+     * @param oldValue 输入前的老值
+     * @return 如果输入正常，且可以更新原码和补码，则返回true
      */
-    private String inputFilter(TextField textField, String newValue){
+    private boolean inputFilter(TextField textField, String newValue, String oldValue){
+        if ("".equals(newValue)){
+            textField.setText("0");
+            return true;
+        }
+        if (newValue.endsWith("-")){
+            textField.setText("-");
+            return false;//不需要更新
+        }
+
         if (mIsDouble){
             //存在小数点
             if (newValue.contains(".")){
                 if (newValue.indexOf(".") != newValue.lastIndexOf(".")){
-                    textField.setText("0");
-                    return "00";
+                    textField.setText(oldValue);
+                    return false;
                 }else {
                     //当只有一个小数点并且小数点不在最后一位的时候，才可能是浮点数
                     if (!newValue.endsWith(".")){
                         if (NumberUtils.isDouble(newValue)){
                             textField.setText(newValue);
-                            return NumberUtils.decimal2DoubleBinary(Double.valueOf(newValue), mBitLength);
+                            return true;
                         }else {
-                            textField.setText("0");
-                            return "00";
+                            textField.setText(oldValue);
+                            return false;
                         }
                     }else {
                         textField.setText(newValue);
-                        return "00";
+                        return false;
                     }
                 }
             }else {
-                textField.setText("0");
-                return "00";
+                if (NumberUtils.isDouble(newValue)){
+                    textField.setText(newValue);
+                    return true;
+                }else {
+                    textField.setText(oldValue);
+                    return false;
+                }
+
             }
         }else {
             if (NumberUtils.isInteger(newValue)){
-                textField.setText(newValue);
-                return NumberUtils.transBinNum(mBitLength, newValue);
+                textField.setText("" + Integer.parseInt(newValue));
+                return true;
             }else {
-                textField.setText("0");
-                return "00";
+                textField.setText(oldValue);
+                return false;
             }
         }
     }
@@ -162,10 +186,34 @@ public class MainViewController implements Initializable {
     }
 
     private void calculate(int calculateType){
+        //如果选择了纯小数，输入的值的绝对值必须小于1
+        if (mIsDouble){
+            Double d1 = Double.valueOf(mEditNum1.getText());
+            Double d2 = Double.valueOf(mEditNum2.getText());
+            if (Math.abs(d1) >= 1 || Math.abs(d2) >= 1){
+                showDialog("提示", "输入的数不是纯小数，请检查！");
+                return;
+            }
+        }
+
+        //整数的时候，如果选择字节长度，判断是否溢出
+        if (!mIsDouble){
+            if (mNum1.contains(".") || mNum2.contains(".")){
+                showDialog("提示", "输入的数不是整数！请检查！");
+                return;
+            }
+            if (mNum1.length() > mBitLength + 1 || mNum2.length() > mBitLength + 1){
+                showDialog("提示", "输入的数超过了选中的字节长！请检查！");
+                return;
+            }
+        }
+
+        //除法的时候判断被除数不能为0
         if (calculateType == Operation.OP_DIVISION && "0".equals(mEditNum2.getText())){
             showDialog("提示", "被除数不能为0！");
             return;
         }
+
         try {
             AppDataUtils.put("num1", mNum1);
             AppDataUtils.put("num2", mNum2);

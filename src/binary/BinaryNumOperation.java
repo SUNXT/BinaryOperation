@@ -557,11 +557,12 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
         Log.d("结果：(" + operation.getNum1().getDecimalValue() + ") / (" + operation.getNum2().getDecimalValue() + ") = " + result.getDecimalValue());
 
         Operation.DivisionProcess divisionProcess1 = new Operation.DivisionProcess();
-        divisionProcess1.setProcess("计算结果：" + result.toString());
+        divisionProcess1.setProcess("计算结果：" + result.toString() + " 余数：" + NumberUtils.transString(remainderValues));
         processes.add(divisionProcess1);
 
+        int r = operation.getNum1().getDecimalValue() - operation.getNum2().getDecimalValue() * result.getDecimalValue();
         divisionProcess1 = new Operation.DivisionProcess();
-        divisionProcess1.setProcess(operation.getNum1().getDecimalValue() + " / " + operation.getNum2().getDecimalValue() + " = " + operation.getResult().getDecimalValue());
+        divisionProcess1.setProcess(operation.getNum1().getDecimalValue() + " / " + operation.getNum2().getDecimalValue() + " = " + operation.getResult().getDecimalValue() + " 余数：" + r);
         processes.add(divisionProcess1);
 
         return operation;
