@@ -441,7 +441,6 @@ public class BinaryNumOperation extends BaseBinaryNumOperation implements IBinar
         return operation;
     }
 
-
     /**
      * 除法运算 num1/num2
      * 采用加减交替法
